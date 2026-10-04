@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>Sistem Kajian KLB Keracunan Pangan – TGC Dinkes Kapuas</title>
+<!-- API_URL kosong = MODE INTERNAL (tanpa login, data di peramban). Isi API_URL untuk mode server bersama. -->
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -102,7 +103,7 @@ pre.report{white-space:pre-wrap;font-family:inherit;background:var(--paper);bord
 <body>
 
 <!-- LOGIN -->
-<div id="vLogin" class="login">
+<div id="vLogin" class="login hidden">
   <div class="brand">Sistem Kajian KLB Keracunan Pangan</div>
   <p class="lead">Tim Gerak Cepat, Dinas Kesehatan Kabupaten Kapuas. Masukkan kode akses yang diberikan admin Dinkes.</p>
   <div class="box">
@@ -127,8 +128,11 @@ pre.report{white-space:pre-wrap;font-family:inherit;background:var(--paper);bord
       <button class="btn" id="btnNewEv">Catat kejadian baru</button>
       <label class="btn sec" style="margin:0" id="lblImpEv">Impor cadangan .json<input type="file" id="fileEvJson" accept=".json" hidden></label>
       <button class="btn ghost" id="btnRefList">Muat ulang</button>
+      <button class="btn sec hidden" id="btnBkAll">Cadangkan semua data</button>
+      <label class="btn ghost hidden" style="margin:0" id="lblRsAll">Pulihkan semua<input type="file" id="fileRsAll" accept=".json" hidden></label>
       <select id="fStat" style="width:auto"><option value="aktif">Kejadian aktif</option><option value="ditutup">Sudah ditutup</option><option value="">Semua</option></select>
     </div>
+    <div id="bkBox" class="hidden"></div>
     <div id="evList"></div>
   </main>
 </div>
@@ -307,7 +311,7 @@ pre.report{white-space:pre-wrap;font-family:inherit;background:var(--paper);bord
 
 <script>
 /* ================= KONFIGURASI ================= */
-const API_URL = "https://script.google.com/macros/s/…/exec"; // tempel URL Web App Apps Script (…/exec). Kosong = mode uji coba lokal.
+const API_URL = ""; // KOSONG = MODE INTERNAL (tanpa login, data di peramban ini). Isi URL Web App Apps Script (…/exec) untuk mode server bersama.
 const FASKES = ["Dinas Kesehatan Kabupaten Kapuas","RSUD dr. H. Soemarno Sosroatmodjo Kuala Kapuas","Puskesmas Dadahup","Puskesmas Palangkau","Tidak berobat"];
 const POLL_MS = 60000;
 /* =============================================== */
@@ -391,8 +395,7 @@ const Local={
  id(p){return p+"-"+Date.now().toString(36).toUpperCase()+Math.random().toString(36).slice(2,6).toUpperCase()},
  now(){return localISO(new Date())},
  call(action,p,kode){
-  if(kode!=="UJI-ADMIN")throw new Error("Kode akses tidak dikenal. Mode uji coba memakai kode UJI-ADMIN.");
-  const u={nama:"Admin uji coba",peran:"admin",faskes:"Dinas Kesehatan Kabupaten Kapuas"},o=u.faskes+" / "+u.nama;const D=this.db();
+  const u={nama:"Epidemiolog (internal)",peran:"admin",faskes:"Dinas Kesehatan Kabupaten Kapuas"},o=u.faskes+" / "+u.nama;const D=this.db();
   switch(action){
    case"login":return u;
    case"listEvents":return Object.entries(D.events).map(([id,e])=>{const ps=Object.values(D.persons).filter(x=>x.kejadianId===id&&!x.dihapus);return{id,versi:e.versi,nama:e.data.nama,desa:e.data.desa,kec:e.data.kec,makan:e.data.makan,status:e.data.status||"aktif",diperbarui:e.diperbarui,orang:ps.length,sakit:ps.filter(x=>x.data.sakit).length,meninggal:ps.filter(x=>x.data.status==="Mg").length}}).sort((a,b)=>a.diperbarui<b.diperbarui?1:-1);
@@ -414,7 +417,7 @@ function setSync(t,bad){const s=$("#sync");if(s){s.textContent=(!bad&&lastSaved&
 
 /* ---------- views ---------- */
 function show(v){["vLogin","vList","vEvent"].forEach(x=>$("#"+x).classList.toggle("hidden",x!==v));window.scrollTo(0,0)}
-function whoText(){return `<b>${esc(USER.nama)}</b> · ${esc(USER.faskes)} · peran ${esc(USER.peran)}${API_URL?"":" · <b>mode uji coba lokal</b>"}`}
+function whoText(){return API_URL?`<b>${esc(USER.nama)}</b> · ${esc(USER.faskes)} · peran ${esc(USER.peran)}`:`<b>Mode internal</b> · data tersimpan di peramban perangkat ini`}
 
 async function doLogin(k){
  KODE=(k||$("#kode").value).trim();if(!KODE)return;$("#loginMsg").textContent="Memeriksa…";
@@ -581,7 +584,7 @@ document.addEventListener("click",ev=>{const b=ev.target.closest("button");if(!b
  if(b.dataset.open)openEvent(b.dataset.open);if(b.dataset.tab)showTab(b.dataset.tab);if(b.dataset.edit)openPerson(b.dataset.edit);if(b.hasAttribute("data-close"))b.closest("dialog").close()});
 $("#btnLogin").onclick=()=>doLogin();$("#kode").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin()});
 $("#btnOut1").onclick=logout;$("#btnRefList").onclick=loadList;
-$("#btnBack").onclick=async()=>{if(dirty){clearTimeout(saveTimer);await saveEvent()}clearInterval(pollT);CUR=null;await loadList();show("vList")};
+$("#btnBack").onclick=async()=>{if(dirty){clearTimeout(saveTimer);await saveEvent()}clearInterval(pollT);CUR=null;await loadList();renderBk();show("vList")};
 $("#btnNewEv").onclick=async()=>{const d=blankEvent();d.nama="Dugaan KLB keracunan pangan (baru)";d.tl.w1=localISO(new Date());try{const r=await api("saveEvent",{data:d});toast("Kejadian baru dibuat. Lengkapi identitasnya.");await openEvent(r.id)}catch(e){toast(e.message)}};
 async function impEventJson(f){if(!f)return;try{const o=JSON.parse(await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>no(new Error("berkas tidak terbaca"));r.readAsText(f)}));if(!o.event||!Array.isArray(o.persons))throw new Error("format tidak dikenal");
  const d=norm(Object.assign({},o.event,{foods:o.foods||[],suspect:o.suspect||"",tl:o.tl||{},comp:o.comp||{},ira:o.ira||{},tasks:o.tasks||{}}));
@@ -652,7 +655,18 @@ $("#faskesList").innerHTML=FASKES.map(f=>`<option>${esc(f)}</option>`).join("");
 $("#localHint").classList.toggle("hidden",!!API_URL);
 window.addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue=""}});
 setInterval(()=>{if(CUR)renderHeader()},60000);
-let k0="";try{k0=sessionStorage.getItem("tgc-kode")||""}catch(e){}if(k0)doLogin(k0);
+/* mode internal: tanpa login, cadangan berkala */
+const BKKEY="tgc-klb-cadangan-terakhir";
+function renderBk(){if(API_URL)return;const D=Local.db(),n=Object.keys(D.events).length;let last="";try{last=localStorage.getItem(BKKEY)||""}catch(e){}
+ const age=last?hrs(dt(last),new Date()):null,box=$("#bkBox");box.classList.remove("hidden");
+ box.innerHTML=`<div class="banner ${n&&(!last||age>24)?"red":""}"><b>Mode internal.</b> Data hanya tersimpan di peramban ini (${esc(location.host||"berkas lokal")}). Membersihkan riwayat/data situs atau berganti perangkat akan menghilangkannya. `+(n?(last?`Cadangan terakhir: <b>${fdt(last)}</b>${age>24?" (lebih dari 24 jam lalu)":""}. `:"<b>Belum pernah dicadangkan.</b> "):"")+`Gunakan <b>Cadangkan semua data</b> setiap selesai memperbarui, dan simpan berkasnya di folder kerja dinas.</div>`}
+$("#btnBkAll").onclick=()=>{const D=Local.db();download(`Cadangan_SEMUA_KLB_TGC_Kapuas_${new Date().toISOString().slice(0,16).replace(/[:T]/g,"-")}.json`,JSON.stringify({jenis:"cadangan-semua-tgc-klb",dibuat:localISO(new Date()),db:D},null,1),"application/json");try{localStorage.setItem(BKKEY,localISO(new Date()))}catch(e){}renderBk();toast("Cadangan semua data diunduh")};
+$("#fileRsAll").addEventListener("change",ev=>{const f=ev.target.files[0];ev.target.value="";if(!f)return;const r=new FileReader();r.onload=async()=>{try{const o=JSON.parse(r.result);if(o.jenis!=="cadangan-semua-tgc-klb"||!o.db||!o.db.events)throw new Error("bukan berkas 'Cadangkan semua data'. Untuk cadangan satu kejadian, pakai Impor cadangan .json");
+ if(!confirm(`Ganti SELURUH data di peramban ini dengan cadangan tanggal ${fdt(o.dibuat)} (${Object.keys(o.db.events).length} kejadian)?`))return;Local.put(o.db);await loadList();renderBk();toast("Data dipulihkan")}catch(e){toast("Gagal: "+e.message)}};r.readAsText(f)});
+if(API_URL){let k0="";try{k0=sessionStorage.getItem("tgc-kode")||""}catch(e){}if(k0)doLogin(k0)}
+else{["btnBkAll","lblRsAll"].forEach(id=>$("#"+id).classList.remove("hidden"));$("#btnOut1").classList.add("hidden");$("#vLogin").classList.add("hidden");
+ try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+ doLogin("INTERNAL").then(renderBk)}
 })();
 </script>
 </body>
