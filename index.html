@@ -632,7 +632,7 @@ $("#mapGo").onclick=async()=>{const M={};$$("[data-map]").forEach(s=>M[s.dataset
   const us=String(col(r,"umur"));let umur=us.match(/[\d.,]+/)?parseFloat(us.replace(",",".")):"";if(/bl|bulan/i.test(us)&&umur!=="")umur=Math.round(umur/12*10)/10;
   const st=(String(col(r,"status"))+" "+String(col(r,"ket"))).toLowerCase(),status=/meninggal|wafat/.test(st)?"Mg":/rujuk/.test(st)?"Rj":/sembuh|pulang/.test(st)?"Sm":/rawat inap|opname|dirawat/.test(st)?"Dr":/rawat jalan|lemas|lemah|baik|stabil/.test(st)?"MS":"";
   const tr=String(col(r,"triase")).toLowerCase(),triase=/berat/.test(tr)?"Berat":/sedang/.test(tr)?"Sedang":/ringan/.test(tr)?"Ringan":"";
-  const foods={};const jn=String(col(r,"jenis")).toLowerCase();E().foods.forEach(f=>{if(jn&&jn.includes(f.toLowerCase()))foods[f]=true});
+  const foods={};const jn=String(col(r,"jenis")).toLowerCase().trim();if(M.jenis>=0&&jn&&!/^(-|\?|tidak tahu|tdk tahu|lupa)$/.test(jn))E().foods.forEach(f=>{foods[f]=jn.includes(f.toLowerCase())});
   let onset=xlDate(col(r,"onsetTgl"),col(r,"onsetJam"));if(!onset&&sakit)onset=xlDate(col(r,"masuk"),"");
   return{nama:String(col(r,"nama")).trim(),umur,jk,alamat:String(col(r,"alamat")).trim(),faskes:(String(col(r,"faskes")).trim()||defFk).replace(/^pkm\.?\s+/i,"Puskesmas "),sakit,gejala:gej,lain:[String(col(r,"status")).trim(),String(col(r,"ket")).trim(),jn?"makan: "+jn:""].filter(Boolean).join("; "),makan:xlDate(col(r,"makanTgl"),col(r,"makanJam")),onset,triase,status,lab:"",hamil:false,foods}}).filter(p=>p.nama);
  if(!items.length){toast("Tidak ada baris bernama yang terbaca");return}
