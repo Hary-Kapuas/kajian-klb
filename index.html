@@ -307,7 +307,7 @@ pre.report{white-space:pre-wrap;font-family:inherit;background:var(--paper);bord
 
 <script>
 /* ================= KONFIGURASI ================= */
-const API_URL = "https://script.google.com/macros/s/AKfycbxOlqgvydd6FNAuyMnUJ6XJau-AzHt7Si1gVzapFj0givoBMDMCseA__Vbd4pv7BPLUxA/exec"; // tempel URL Web App Apps Script (…/exec). Kosong = mode uji coba lokal.
+const API_URL = ""; // tempel URL Web App Apps Script (…/exec). Kosong = mode uji coba lokal.
 const FASKES = ["Dinas Kesehatan Kabupaten Kapuas","RSUD dr. H. Soemarno Sosroatmodjo Kuala Kapuas","Puskesmas Dadahup","Puskesmas Palangkau","Tidak berobat"];
 const POLL_MS = 60000;
 /* =============================================== */
@@ -367,7 +367,7 @@ const TASKS=[
 
 /* ---------- state ---------- */
 let USER=null, KODE="", CUR=null /*{id,versi,data}*/, PL=[] /*[{id,versi,data,oleh}]*/;
-let editId=null, xl=null, saveTimer=null, saving=false, dirty=false, pollT=null;
+let lastSaved="",editId=null, xl=null, saveTimer=null, saving=false, dirty=false, pollT=null;
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("on"),3200)}
@@ -409,7 +409,8 @@ async function api(action,payload){
  if(!r.ok)throw new Error("Server tidak merespons ("+r.status+")");
  const j=await r.json();if(!j.ok)throw new Error(j.error||"Galat server");return j.data;
 }
-function setSync(t,bad){const s=$("#sync");if(s){s.textContent=t;s.style.color=bad?"#F5A39B":"#B8CAD6"}}
+const hm=()=>new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
+function setSync(t,bad){const s=$("#sync");if(s){s.textContent=(!bad&&lastSaved&&!/Menyimpan|Tersimpan/.test(t)?"✓ Tersimpan "+lastSaved+" · ":"")+t;s.style.color=bad?"#F5A39B":"#B8CAD6"}}
 
 /* ---------- views ---------- */
 function show(v){["vLogin","vList","vEvent"].forEach(x=>$("#"+x).classList.toggle("hidden",x!==v));window.scrollTo(0,0)}
@@ -434,7 +435,7 @@ function renderList(){
  :`<div class="box"><p>${f==="aktif"?"Tidak ada kejadian aktif.":"Belum ada kejadian."}</p>${canEv()?'<p class="note">Pilih "Catat kejadian baru" saat menerima laporan W1 dari Puskesmas atau rumah sakit.</p>':'<p class="note">Kejadian dicatat oleh TGC Dinkes; setelah itu Puskesmas dapat mengisi line-list.</p>'}</div>`;
 }
 async function openEvent(id){
- try{const r=await api("getEvent",{id});CUR={id:r.event.id,versi:r.event.versi,data:norm(r.event.data)};PL=r.persons;dirty=false;
+ try{const r=await api("getEvent",{id});CUR={id:r.event.id,versi:r.event.versi,data:norm(r.event.data)};PL=r.persons;dirty=false;lastSaved="";
   show("vEvent");renderTabs();setSync("Tersinkron "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}));
   clearInterval(pollT);pollT=setInterval(poll,POLL_MS)}
  catch(e){toast(e.message)}
@@ -449,7 +450,7 @@ async function poll(){
 function queueSave(){if(!canEv())return;dirty=true;setSync("Menyimpan…");clearTimeout(saveTimer);saveTimer=setTimeout(saveEvent,1200)}
 async function saveEvent(){
  if(saving){saveTimer=setTimeout(saveEvent,800);return}
- saving=true;try{const r=await api("saveEvent",{id:CUR.id,versi:CUR.versi,data:CUR.data});CUR.versi=r.versi;dirty=false;setSync("Tersimpan "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}))}
+ saving=true;try{const r=await api("saveEvent",{id:CUR.id,versi:CUR.versi,data:CUR.data});CUR.versi=r.versi;dirty=false;lastSaved=hm();setSync("✓ Tersimpan ke server "+lastSaved)}
  catch(e){if(/KONFLIK/.test(e.message)){toast("Data kejadian baru saja diubah anggota lain. Isian dimuat ulang; ulangi perubahan Anda.");dirty=false;saving=false;await poll();return}setSync("Gagal menyimpan: "+e.message,true);toast("Gagal menyimpan: "+e.message)}
  saving=false;
 }
@@ -600,7 +601,7 @@ $("#dlgSave").onclick=async()=>{const g=s=>$(s).value;const p={nama:g("#p_nama")
  $$("#p_food select").forEach(s=>{if(s.value!=="")p.foods[s.dataset.food]=s.value==="1"});if(!p.nama){toast("Isi nama terlebih dahulu");return}
  const mk=dt(p.makan||E().makan);if(p.sakit&&p.onset&&mk&&dt(p.onset)<mk&&!confirm("Waktu onset lebih awal dari waktu makan. Tetap simpan?"))return;
  const w=editId?PL.find(x=>x.id===editId):null;$("#dlgSave").disabled=true;
- try{const r=await api("savePerson",{id:w?w.id:null,versi:w?w.versi:null,kejadianId:CUR.id,data:p});if(w){w.data=p;w.versi=r.versi}else PL.push({id:r.id,versi:1,data:p,oleh:USER.faskes+" / "+USER.nama});$("#dlgPerson").close();renderAll();toast("Data disimpan")}
+ try{const r=await api("savePerson",{id:w?w.id:null,versi:w?w.versi:null,kejadianId:CUR.id,data:p});if(w){w.data=p;w.versi=r.versi}else PL.push({id:r.id,versi:1,data:p,oleh:USER.faskes+" / "+USER.nama});lastSaved=hm();setSync("✓ Tersimpan ke server "+lastSaved);$("#dlgPerson").close();renderAll();toast("Data disimpan")}
  catch(e){toast(e.message);if(/KONFLIK/.test(e.message)){$("#dlgPerson").close();await poll()}}finally{$("#dlgSave").disabled=false}};
 $("#dlgDel").onclick=async()=>{const w=PL.find(x=>x.id===editId);if(!w||!confirm("Hapus data "+w.data.nama+"?"))return;try{await api("deletePerson",{id:w.id});PL=PL.filter(x=>x!==w);$("#dlgPerson").close();renderAll()}catch(e){toast(e.message)}};
 
