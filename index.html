@@ -176,6 +176,7 @@ pre.report{white-space:pre-wrap;font-family:inherit;background:var(--paper);bord
   <p class="lead">Masukkan penderita <strong>dan</strong> peserta yang ikut makan tetapi tidak sakit. Setiap baris tercatat dengan nama faskes penginput.</p>
   <div class="btns noprint" style="margin-bottom:12px">
     <button class="btn" id="btnAdd">Tambah orang</button>
+    <button class="btn ghost" id="btnAddr">Seragamkan alamat</button>
     <label class="btn sec" style="margin:0">Impor Excel / CSV<input type="file" id="fileXlsx" accept=".xlsx,.xls,.csv" hidden></label>
     <span class="note" id="llCount"></span>
   </div>
@@ -292,6 +293,15 @@ pre.report{white-space:pre-wrap;font-family:inherit;background:var(--paper);bord
   <div class="df"><button class="btn danger" id="dlgDel">Hapus</button><button class="btn ghost" data-close>Batal</button><button class="btn" id="dlgSave">Simpan</button></div>
 </dialog>
 <datalist id="faskesList"></datalist>
+
+<dialog id="dlgAddr">
+  <div class="dh"><h3 style="margin:0">Seragamkan alamat</h3><button class="btn ghost sm" data-close>Tutup</button></div>
+  <div class="db">
+    <p class="note">Kolom kiri adalah tulisan alamat yang ada sekarang. Ubah kolom kanan menjadi tulisan yang seragam; semua orang dengan alamat di kiri akan ikut diganti. Baris yang tidak diubah dibiarkan.</p>
+    <div class="scroll" id="addrList"></div>
+  </div>
+  <div class="df"><button class="btn ghost" data-close>Batal</button><button class="btn" id="addrGo">Terapkan</button></div>
+</dialog>
 
 <dialog id="dlgMap">
   <div class="dh"><h3 style="margin:0">Pemetaan kolom Excel</h3><button class="btn ghost sm" data-close>Tutup</button></div>
@@ -495,7 +505,7 @@ function renderHeader(){const e=E(),cs=cases(),d=cs.filter(p=>p.status==="Mg").l
  const seg=(num,what,row,ex)=>{let cls="",st="Belum diisi";if(row){if(row.status==="ok"){cls="ok";st="Tercapai ("+f1(row.dur)+" jam)"}else if(row.status==="late"){cls="late";st="Terlambat ("+f1(row.dur)+" jam)"}else if(row.status==="run"){cls="run";st="Berjalan, sisa "+f1(row.left)+" jam"}else if(row.status==="over"){cls="late";st="Lewat batas "+f1(-row.left)+" jam"}}if(ex){st=ex.st;cls=ex.cls}return `<div class="seg ${cls}"><div class="num">${num}</div><div class="what">${what}</div><div class="state">${st}</div></div>`};
  const done=COMP.filter(c=>e.comp[c[0]]).length,w1=tlGet("w1");let ex;if(w1){const left=168-hrs(w1,new Date());ex=done===7?{cls:"ok",st:"7/7 komponen selesai"}:left<0?{cls:"late",st:done+"/7 komponen, lewat batas"}:{cls:"run",st:done+"/7 komponen, sisa "+f1(left/24)+" hari"}}else ex={cls:"",st:done+"/7 komponen, menunggu jam W1"};
  $("#s717").innerHTML=seg(7,"hari: deteksi sejak kasus pertama",g("deteksi"))+seg(1,"hari: notifikasi W1 setelah deteksi",g("w1"))+seg(7,"hari: respons awal sejak notifikasi",null,ex)}
-function lockFields(){const ro=!canEv();$$("#p-kejadian input,#p-kejadian textarea,#p-kejadian select,#p-ira input,#p-717 input,#p-tugas input,#p-tugas textarea,#tindakan,#suspectFood").forEach(el=>el.disabled=ro);
+function lockFields(){const ro=!canEv();$("#btnAddr")&&$("#btnAddr").classList.toggle("hidden",ro);$$("#p-kejadian input,#p-kejadian textarea,#p-kejadian select,#p-ira input,#p-717 input,#p-tugas input,#p-tugas textarea,#tindakan,#suspectFood").forEach(el=>el.disabled=ro);
  $("#roleNote").textContent=ro?"Peran Puskesmas: bagian ini hanya bisa dilihat. Puskesmas mengisi data di tab Line-list.":"Perubahan tersimpan otomatis ke server dan terlihat oleh seluruh anggota TGC."}
 function renderKejadian(){const e=E();$$("[data-e]").forEach(el=>{if(document.activeElement!==el)el.value=e[el.dataset.e]||(el.dataset.e==="status"?"aktif":"")});if(document.activeElement!==$("#e_menu"))$("#e_menu").value=e.foods.join(", ");
  const tgl=e.makan?dt(e.makan).toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"}):"[tanggal acara]";
@@ -600,6 +610,14 @@ function openPerson(id){editId=id;const w=id?PL.find(x=>x.id===id):null,p=w?w.da
  $("#p_food").innerHTML=E().foods.length?E().foods.map(f=>{const v=p.foods?p.foods[f]:undefined;return`<label>${esc(f)} <select data-food="${esc(f)}"><option value="">?</option><option value="1" ${v===true?"selected":""}>Ya</option><option value="0" ${v===false?"selected":""}>Tidak</option></select></label>`}).join(""):'<p class="note">Menu belum diisi TGC di tab Kejadian.</p>';
  $("#p_oleh").textContent=w?"Diinput oleh "+(w.oleh||"-"):"";$("#dlgPerson").showModal()}
 $("#btnAdd").onclick=()=>openPerson(null);
+$("#btnAddr").onclick=()=>{if(!canEv()){toast("Hanya TGC/admin yang dapat menyeragamkan alamat");return}const m={};PL.forEach(w=>{const a=(w.data.alamat||"").trim();m[a]=(m[a]||0)+1});const rows=Object.entries(m).sort((a,b)=>a[0].localeCompare(b[0]));
+ $("#addrList").innerHTML=rows.length?`<table><tr><th>Alamat sekarang</th><th class="n">Orang</th><th>Ganti menjadi</th></tr>${rows.map(([a,n],i)=>`<tr><td>${a?esc(a):'<span class="note">(kosong)</span>'}</td><td class="n">${n}</td><td><input data-addr="${i}" value="${esc(a)}" list="addrSug"></td></tr>`).join("")}</table><datalist id="addrSug">${rows.filter(r=>r[0]).map(r=>`<option>${esc(r[0])}</option>`).join("")}</datalist>`:'<p class="note">Belum ada data.</p>';
+ $("#addrList")._rows=rows;$("#dlgAddr").showModal()};
+$("#addrGo").onclick=async()=>{const rows=$("#addrList")._rows||[],ch={};$$("[data-addr]").forEach(el=>{const old=rows[+el.dataset.addr][0],nv=el.value.trim();if(nv!==old)ch[old]=nv});
+ const targets=PL.filter(w=>Object.prototype.hasOwnProperty.call(ch,(w.data.alamat||"").trim()));if(!targets.length){$("#dlgAddr").close();return}
+ if(!confirm(`Ubah alamat ${targets.length} orang?`))return;$("#addrGo").disabled=true;let ok=0;
+ try{for(const w of targets){const d=Object.assign({},w.data,{alamat:ch[(w.data.alamat||"").trim()]});const r=await api("savePerson",{id:w.id,versi:w.versi,kejadianId:CUR.id,data:d});w.data=d;w.versi=r.versi;ok++}
+  toast(ok+" alamat diseragamkan")}catch(e){toast("Berhenti setelah "+ok+" data: "+e.message)}finally{$("#addrGo").disabled=false;$("#dlgAddr").close();renderAll()}};
 $("#dlgSave").onclick=async()=>{const g=s=>$(s).value;const p={nama:g("#p_nama").trim(),umur:g("#p_umur"),jk:g("#p_jk"),alamat:g("#p_alamat").trim(),sakit:g("#p_sakit")==="1",faskes:g("#p_faskes").trim(),makan:g("#p_makan")===E().makan?"":g("#p_makan"),onset:g("#p_onset"),triase:g("#p_triase"),status:g("#p_status"),lab:g("#p_lab"),hamil:g("#p_hamil")==="1",lain:g("#p_lain"),gejala:$$("#p_sym input:checked").map(x=>x.value),foods:{}};
  $$("#p_food select").forEach(s=>{if(s.value!=="")p.foods[s.dataset.food]=s.value==="1"});if(!p.nama){toast("Isi nama terlebih dahulu");return}
  const mk=dt(p.makan||E().makan);if(p.sakit&&p.onset&&mk&&dt(p.onset)<mk&&!confirm("Waktu onset lebih awal dari waktu makan. Tetap simpan?"))return;
