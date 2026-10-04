@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Sistem Kajian KLB Keracunan Pangan – TGC Dinkes Kapuas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--ink:#10293F;--ink2:#3C566B;--muted:#6A7F90;--river:#1F6E78;--riverSoft:#E3F0F1;--paper:#F5F7F8;--card:#fff;--line:#D6DEE4;--amber:#B9770E;--amberSoft:#FBF1DE;--red:#B3261E;--redSoft:#FBE7E5;--green:#2E7D4F;--greenSoft:#E3F2E8;--bar:#1F6E78;--focus:#1F6E78;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#E6EEF3;--ink2:#B9C8D3;--muted:#8FA3B2;--river:#5DB3BC;--riverSoft:#173A3E;--paper:#0E1A23;--card:#15242F;--line:#2A3C49;--amber:#E2A847;--amberSoft:#3A2C12;--red:#F08A80;--redSoft:#3E1C1A;--green:#7CC79A;--greenSoft:#163222;--bar:#5DB3BC;--focus:#5DB3BC}}
+:root[data-theme="dark"]{--ink:#E6EEF3;--ink2:#B9C8D3;--muted:#8FA3B2;--river:#5DB3BC;--riverSoft:#173A3E;--paper:#0E1A23;--card:#15242F;--line:#2A3C49;--amber:#E2A847;--amberSoft:#3A2C12;--red:#F08A80;--redSoft:#3E1C1A;--green:#7CC79A;--greenSoft:#163222;--bar:#5DB3BC;--focus:#5DB3BC}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.5;font-variant-numeric:tabular-nums}
+h1,h2,h3{line-height:1.2;margin:0}h2{font-size:1.25rem;font-weight:700;margin-bottom:.35rem}h3{font-size:1rem;font-weight:700;margin-bottom:.4rem}p{margin:.3rem 0 .7rem}
+.wrap{max-width:1180px;margin:0 auto;padding:0 18px}
+.hidden{display:none!important}
+header.top{background:#10293F;color:#fff;padding:16px 0 0}
+.topbar{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;font-size:.84rem;color:#B8CAD6;padding-bottom:10px}
+.topbar b{color:#fff}
+.topbar button{font:inherit;font-weight:600;background:rgba(255,255,255,.1);color:#fff;border:0;border-radius:5px;padding:4px 10px;cursor:pointer}
+header.top h1{font-size:clamp(1.2rem,2.5vw,1.7rem);font-weight:800;letter-spacing:-.01em;color:#fff}
+header.top .sub{color:#B8CAD6;font-size:.92rem;margin-top:4px}
+.statusrow{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 0}
+.chip{display:inline-flex;align-items:center;border-radius:999px;padding:3px 11px;font-size:.8rem;font-weight:600;background:rgba(255,255,255,.1);color:#fff}
+.chip.warn{background:#B9770E}.chip.bad{background:#B3261E}.chip.ok{background:#2E7D4F}
+.s717{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:14px}
+.s717 .seg{background:rgba(255,255,255,.06);padding:11px 14px 14px;position:relative}
+.s717 .seg:first-child{border-radius:8px 0 0 0}.s717 .seg:last-child{border-radius:0 8px 0 0}
+.s717 .num{font-size:2.4rem;font-weight:800;line-height:1;color:#fff}.s717 .what{font-size:.8rem;color:#B8CAD6;margin-top:4px}.s717 .state{font-size:.85rem;font-weight:600;margin-top:7px;color:#fff}
+.s717 .seg::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:#5B7183}
+.s717 .seg.ok::after{background:#4CB37A}.s717 .seg.late::after{background:#E0584E}.s717 .seg.run::after{background:#E2A847}
+nav.tabs{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+nav.tabs .wrap{display:flex;gap:2px;overflow-x:auto}
+nav.tabs button{appearance:none;border:0;background:none;color:var(--ink2);font:inherit;font-weight:600;font-size:.9rem;padding:13px 12px 11px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--river)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+main{padding:22px 0 60px}
+section.panel{display:none}section.panel.on{display:block}
+.grid{display:grid;gap:16px}.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px}.box.flat{border-radius:6px}
+.lead{color:var(--ink2);max-width:75ch}.note{font-size:.85rem;color:var(--muted)}
+.banner{border-left:4px solid var(--amber);background:var(--amberSoft);padding:10px 14px;border-radius:4px;margin-bottom:14px;font-size:.9rem}
+.banner.red{border-color:var(--red);background:var(--redSoft)}.banner.green{border-color:var(--green);background:var(--greenSoft)}
+label{display:block;font-size:.84rem;font-weight:600;color:var(--ink2);margin-bottom:3px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:6px;padding:7px 9px;width:100%}
+input:disabled,select:disabled,textarea:disabled{opacity:.7}
+textarea{min-height:76px;resize:vertical}
+.fields{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.btn{appearance:none;font:inherit;font-weight:600;font-size:.9rem;border-radius:6px;padding:8px 14px;border:1px solid var(--river);background:var(--river);color:#fff;cursor:pointer}
+.btn.sec{background:transparent;color:var(--river)}.btn.ghost{background:transparent;border-color:var(--line);color:var(--ink2)}.btn.danger{background:transparent;border-color:var(--red);color:var(--red)}.btn.sm{padding:4px 9px;font-size:.82rem}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px}.kpi .v{font-size:1.7rem;font-weight:800;line-height:1.1}.kpi .l{font-size:.82rem;color:var(--muted)}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+th{font-weight:700;color:var(--ink2);background:var(--riverSoft);white-space:nowrap}
+td.n,th.n{text-align:right}tr.hl td{background:var(--amberSoft)}tr.sick td:first-child{box-shadow:inset 3px 0 0 var(--red)}
+.tag{display:inline-block;font-size:.76rem;font-weight:700;border-radius:4px;padding:1px 6px;background:var(--riverSoft);color:var(--river)}
+.tag.red{background:var(--redSoft);color:var(--red)}.tag.amb{background:var(--amberSoft);color:var(--amber)}.tag.grn{background:var(--greenSoft);color:var(--green)}
+.hbar{display:grid;grid-template-columns:140px 1fr 80px;gap:8px;align-items:center;font-size:.86rem;margin:5px 0}
+.hbar .track{height:14px;background:var(--riverSoft);border-radius:3px;overflow:hidden}.hbar .fill{height:100%;background:var(--bar)}
+svg text{fill:var(--ink2);font-family:inherit}
+.ira{display:flex;gap:6px;margin:8px 0}.ira div{flex:1;text-align:center;padding:10px 4px;border-radius:6px;border:1px solid var(--line);font-weight:700;color:var(--muted)}
+.ira .on.r{background:var(--greenSoft);color:var(--green);border-color:var(--green)}.ira .on.s{background:var(--amberSoft);color:var(--amber);border-color:var(--amber)}.ira .on.t{background:var(--redSoft);color:var(--red);border-color:var(--red)}
+.check{display:flex;gap:9px;align-items:flex-start;padding:6px 0;font-size:.9rem;font-weight:500;color:var(--ink)}.check input{width:auto;margin-top:4px}
+dialog{border:1px solid var(--line);border-radius:10px;padding:0;max-width:760px;width:calc(100% - 24px);background:var(--card);color:var(--ink)}
+dialog::backdrop{background:rgba(10,20,30,.55)}
+dialog .dh{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+dialog .db{padding:16px 18px;max-height:70vh;overflow:auto}dialog .df{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end}
+.symgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px 10px}
+.symgrid label,.foodgrid label{display:flex;gap:6px;align-items:center;font-weight:500;color:var(--ink)}.symgrid input{width:auto}
+.foodgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px 12px}.foodgrid select{width:auto;padding:3px 6px}
+pre.report{white-space:pre-wrap;font-family:inherit;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:14px;font-size:.9rem;margin:0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:6px;font-size:.88rem;z-index:99;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw}
+.toast.on{opacity:1}
+.mapgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+/* login & list */
+.login{max-width:420px;margin:9vh auto 0;padding:0 18px}
+.login .brand{font-size:1.6rem;font-weight:800;line-height:1.15;margin-bottom:6px}
+.evrow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:8px 0}
+.evrow .t{font-weight:700}.evrow .m{font-size:.85rem;color:var(--muted)}
+.task{background:var(--card);border:1px solid var(--line);border-radius:8px;margin:8px 0;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;padding:12px 14px}
+.task.urgent{border-left:4px solid var(--red)}.task.done{opacity:.6}.task.done .tt{text-decoration:line-through}
+.task input[type=checkbox]{width:20px;height:20px;margin-top:2px;accent-color:var(--river)}
+.task .tt{font-weight:700;display:inline;color:var(--ink);font-size:.95rem}
+.task ul{margin:6px 0 0;padding-left:18px;color:var(--ink2);font-size:.9rem}
+.task details{grid-column:2;font-size:.88rem}.task summary{cursor:pointer;color:var(--river);font-weight:600}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;font-size:.8rem}
+.sync{font-size:.8rem}
+@media (max-width:640px){.s717 .num{font-size:1.9rem}.hbar{grid-template-columns:100px 1fr 64px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{nav.tabs,.btns,.noprint,.topbar{display:none!important}section.panel{display:block!important;page-break-after:always}header.top{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="vLogin" class="login">
+  <div class="brand">Sistem Kajian KLB Keracunan Pangan</div>
+  <p class="lead">Tim Gerak Cepat, Dinas Kesehatan Kabupaten Kapuas. Masukkan kode akses yang diberikan admin Dinkes.</p>
+  <div class="box">
+    <label for="kode">Kode akses</label>
+    <input id="kode" autocomplete="off" spellcheck="false" placeholder="mis. PKM-1A2B3C4D">
+    <div class="btns" style="margin-top:12px"><button class="btn" id="btnLogin">Masuk</button><span class="note" id="loginMsg"></span></div>
+    <div id="localHint" class="banner" style="margin:14px 0 0">
+      Alamat server belum diisi, jadi aplikasi berjalan dalam <b>mode uji coba lokal</b>: data hanya tersimpan di peramban ini. Masuk dengan kode <b>UJI-ADMIN</b>.
+    </div>
+  </div>
+</div>
+
+<!-- DAFTAR KEJADIAN -->
+<div id="vList" class="hidden">
+  <header class="top"><div class="wrap">
+    <div class="topbar"><span id="who1"></span><span><button id="btnOut1">Keluar</button></span></div>
+    <h1>Daftar kejadian KLB keracunan pangan</h1>
+    <div class="sub" style="padding-bottom:18px">Tim Gerak Cepat Dinas Kesehatan Kabupaten Kapuas</div>
+  </div></header>
+  <main class="wrap">
+    <div class="btns noprint" style="margin-bottom:12px">
+      <button class="btn" id="btnNewEv">Catat kejadian baru</button>
+      <label class="btn sec" style="margin:0" id="lblImpEv">Impor cadangan .json<input type="file" id="fileEvJson" accept=".json" hidden></label>
+      <button class="btn ghost" id="btnRefList">Muat ulang</button>
+      <select id="fStat" style="width:auto"><option value="aktif">Kejadian aktif</option><option value="ditutup">Sudah ditutup</option><option value="">Semua</option></select>
+    </div>
+    <div id="evList"></div>
+  </main>
+</div>
+
+<!-- KEJADIAN -->
+<div id="vEvent" class="hidden">
+<header class="top"><div class="wrap">
+  <div class="topbar"><span><button id="btnBack">← Daftar kejadian</button> &nbsp;<span id="who2"></span></span><span class="sync" id="sync"></span></div>
+  <h1 id="hTitle"></h1>
+  <div class="sub" id="hSub"></div>
+  <div class="statusrow" id="hChips"></div>
+  <div class="s717" id="s717"></div>
+</div></header>
+<nav class="tabs" aria-label="Bagian kajian"><div class="wrap" role="tablist" id="tabs"></div></nav>
+<main class="wrap">
+
+<section class="panel" id="p-kejadian">
+  <h2>Identitas kejadian</h2>
+  <p class="lead" id="roleNote">Perubahan tersimpan otomatis ke server dan terlihat oleh seluruh anggota TGC.</p>
+  <div class="box">
+    <div class="fields">
+      <div><label for="e_nama">Nama kejadian</label><input id="e_nama" data-e="nama"></div>
+      <div><label for="e_desa">Desa</label><input id="e_desa" data-e="desa"></div>
+      <div><label for="e_kec">Kecamatan</label><input id="e_kec" data-e="kec"></div>
+      <div><label for="e_acara">Acara / tempat paparan</label><input id="e_acara" data-e="acara"></div>
+      <div><label for="e_makan">Waktu makan bersama (default)</label><input type="datetime-local" id="e_makan" data-e="makan"></div>
+      <div><label for="e_pop">Perkiraan jumlah orang yang makan</label><input type="number" min="0" id="e_pop" data-e="populasi"></div>
+      <div><label for="e_penyedia">Penyedia makanan</label><input id="e_penyedia" data-e="penyedia"></div>
+      <div><label for="e_pelapor">Pelapor</label><input id="e_pelapor" data-e="pelapor"></div>
+      <div><label for="e_status">Status kejadian</label><select id="e_status" data-e="status"><option value="aktif">Aktif</option><option value="ditutup">Ditutup (status KLB dicabut / bukan KLB)</option></select></div>
+    </div>
+    <div style="margin-top:12px"><label for="e_menu">Menu yang disajikan (pisahkan dengan koma)</label><textarea id="e_menu"></textarea></div>
+    <div style="margin-top:12px"><label for="e_ket">Kronologi singkat</label><textarea id="e_ket" data-e="kronologi"></textarea></div>
+  </div>
+  <h2 style="margin-top:22px">Definisi kasus operasional</h2>
+  <div class="box" id="caseDef"></div>
+</section>
+
+<section class="panel" id="p-linelist">
+  <h2>Line-listing</h2>
+  <p class="lead">Masukkan penderita <strong>dan</strong> peserta yang ikut makan tetapi tidak sakit. Setiap baris tercatat dengan nama faskes penginput.</p>
+  <div class="btns noprint" style="margin-bottom:12px">
+    <button class="btn" id="btnAdd">Tambah orang</button>
+    <label class="btn sec" style="margin:0">Impor Excel / CSV<input type="file" id="fileXlsx" accept=".xlsx,.xls,.csv" hidden></label>
+    <span class="note" id="llCount"></span>
+  </div>
+  <div class="fields noprint" style="margin-bottom:10px;max-width:760px">
+    <div><label for="f_q">Cari nama / alamat</label><input id="f_q"></div>
+    <div><label for="f_fk">Faskes</label><select id="f_fk"></select></div>
+    <div><label for="f_sk">Status sakit</label><select id="f_sk"><option value="">Semua</option><option value="1">Sakit</option><option value="0">Tidak sakit</option></select></div>
+  </div>
+  <div id="dupWarn"></div>
+  <div class="box flat scroll" style="padding:0"><table id="llTable"></table></div>
+  <p class="note">Kategori otomatis: Suspek = sakit setelah makan di acara; Probable = suspek yang makan pangan tersangka; Konfirmasi = probable dengan lab positif.</p>
+</section>
+
+<section class="panel" id="p-analisis">
+  <h2>Analisis deskriptif orang–tempat–waktu</h2>
+  <div class="kpis" id="kpis" style="margin:12px 0 18px"></div>
+  <div class="grid g2">
+    <div class="box"><h3>Distribusi gejala</h3><div id="symDist"></div></div>
+    <div class="box"><h3>Masa inkubasi dan dugaan agen</h3><div id="incub"></div></div>
+  </div>
+  <div class="box" style="margin-top:16px">
+    <div class="btns" style="justify-content:space-between"><h3 style="margin:0">Kurva epidemik</h3>
+      <div class="btns noprint"><label for="binSel" style="margin:0">Interval</label><select id="binSel" style="width:auto"><option value="1">1 jam</option><option value="2" selected>2 jam</option><option value="3">3 jam</option><option value="6">6 jam</option><option value="24">1 hari</option></select></div></div>
+    <div class="scroll" id="epicurve"></div><div id="epiNote"></div>
+  </div>
+  <div class="grid g2" style="margin-top:16px">
+    <div class="box"><h3>Kelompok umur</h3><div class="scroll" id="ageTbl"></div></div>
+    <div class="box"><h3>Jenis kelamin dan triase</h3><div class="scroll" id="sexTbl"></div></div>
+    <div class="box"><h3>Faskes dan alamat</h3><div class="scroll" id="placeTbl"></div></div>
+    <div class="box"><h3>Status penderita</h3><div class="scroll" id="statTbl"></div></div>
+  </div>
+</section>
+
+<section class="panel" id="p-pangan">
+  <h2>Attack rate spesifik pangan</h2>
+  <p class="lead">Kohort retrospektif peserta acara. Pangan tersangka kuat: RR &gt; 1, p &lt; 0,05, batas bawah IK 95% &gt; 1 (atau sel nol pada kelompok tidak makan), dan ≥ 50% penderita memakannya.</p>
+  <div id="foodWarn"></div>
+  <div class="box flat scroll" style="padding:0"><table id="foodTbl"></table></div>
+  <div class="box" style="margin-top:16px">
+    <div class="fields"><div><label for="suspectFood">Pangan tersangka</label><select id="suspectFood"></select></div></div>
+    <div id="foodInterp" style="margin-top:10px"></div>
+  </div>
+</section>
+
+<section class="panel" id="p-ira">
+  <h2>Kriteria KLB dan Initial Risk Assessment</h2>
+  <div class="grid g2">
+    <div class="box"><h3>Kriteria penetapan KLB (PMK 2/2013 jo. PMK 1/2026)</h3><div id="klbCrit"></div></div>
+    <div class="box"><h3>Initial Risk Assessment</h3>
+      <div class="ira" id="iraBar"><div class="r">Rendah</div><div class="s">Sedang</div><div class="t">Tinggi</div></div>
+      <div id="iraWhy"></div>
+      <div style="margin-top:10px">
+        <label class="check"><input type="checkbox" data-ira="sumberTerkontrol"> Sisa pangan sudah diamankan, konsumsi/distribusi dihentikan</label>
+        <label class="check"><input type="checkbox" data-ira="perluasan"> Ada potensi perluasan (makanan dibawa pulang, dibagikan, penjamah masih memasak)</label>
+        <label class="check"><input type="checkbox" data-ira="kapasitas"> Kapasitas faskes terbebani</label>
+        <label class="check"><input type="checkbox" data-ira="aksesSulit"> Akses rujukan sulit</label>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="panel" id="p-717">
+  <h2>Pemantauan target waktu 7-1-7</h2>
+  <p class="lead">Batas waktu dihitung otomatis dari SOP Aktivasi TGC, Pelaporan, Spesimen, dan Inspeksi Sanitasi.</p>
+  <div class="box flat scroll" style="padding:0"><table id="tlTbl"></table></div>
+  <div class="box" style="margin-top:16px"><h3>Tujuh komponen respons awal (≤ 7 hari sejak notifikasi)</h3><div id="comp7"></div></div>
+</section>
+
+<section class="panel" id="p-tugas">
+  <h2>Daftar tugas TGC</h2>
+  <p class="lead">Centangan dan catatan tersimpan bersama untuk seluruh tim. Batas waktu mengikuti jam yang diisi di tab 7-1-7.</p>
+  <div class="kpis" id="taskKpi" style="margin-bottom:10px"></div>
+  <div id="taskList"></div>
+</section>
+
+<section class="panel" id="p-laporan">
+  <h2>Laporan</h2>
+  <div class="box">
+    <label for="tindakan">Tindakan yang sudah dilakukan</label><textarea id="tindakan" data-e="tindakan"></textarea>
+    <div class="fields" style="margin-top:10px"><div><label for="repType">Jenis laporan</label>
+      <select id="repType"><option value="w1">Laporan W1 Dinkes Kabupaten ke Provinsi</option><option value="harian">Laporan harian KLB</option><option value="situasi">Kerangka laporan situasi awal / PE sementara</option></select></div></div>
+  </div>
+  <div class="box" style="margin-top:14px"><pre class="report" id="repText"></pre>
+    <div class="btns noprint" style="margin-top:12px"><button class="btn" id="btnCopy">Salin teks</button><button class="btn sec" id="btnDlTxt">Unduh .txt</button></div></div>
+  <div class="box" style="margin-top:14px"><h3>Ekspor</h3>
+    <p class="note">Excel berisi line-list, attack rate per pangan, dan rekap. Cadangan .json berisi seluruh isian kejadian ini.</p>
+    <div class="btns noprint"><button class="btn" id="btnXlsx">Unduh Excel analisis</button><button class="btn sec" id="btnJson">Unduh cadangan .json</button></div></div>
+</section>
+</main>
+</div>
+
+<dialog id="dlgPerson">
+  <div class="dh"><h3 style="margin:0" id="dlgTitle">Data orang</h3><button class="btn ghost sm" data-close>Tutup</button></div>
+  <div class="db">
+    <div class="fields">
+      <div><label for="p_nama">Nama</label><input id="p_nama"></div>
+      <div><label for="p_umur">Umur (tahun)</label><input id="p_umur" type="number" min="0" step="0.1"></div>
+      <div><label for="p_jk">Jenis kelamin</label><select id="p_jk"><option value="">-</option><option value="L">Laki-laki</option><option value="P">Perempuan</option></select></div>
+      <div><label for="p_alamat">Alamat (RT/dusun/desa)</label><input id="p_alamat"></div>
+      <div><label for="p_sakit">Sakit setelah makan?</label><select id="p_sakit"><option value="1">Ya, sakit</option><option value="0">Tidak sakit</option></select></div>
+      <div><label for="p_faskes">Faskes tempat berobat</label><input id="p_faskes" list="faskesList"></div>
+      <div><label for="p_makan">Waktu makan</label><input id="p_makan" type="datetime-local"></div>
+      <div><label for="p_onset">Waktu mulai sakit (onset)</label><input id="p_onset" type="datetime-local"></div>
+      <div><label for="p_triase">Triase</label><select id="p_triase"><option value="">-</option><option>Ringan</option><option>Sedang</option><option>Berat</option></select></div>
+      <div><label for="p_status">Status</label><select id="p_status"><option value="">-</option><option value="MS">Masih sakit (rawat jalan)</option><option value="Dr">Dirawat</option><option value="Rj">Dirujuk</option><option value="Sm">Sembuh</option><option value="Mg">Meninggal</option></select></div>
+      <div><label for="p_lab">Hasil laboratorium</label><select id="p_lab"><option value="">Belum/tidak diperiksa</option><option value="proses">Spesimen dikirim, menunggu</option><option value="pos">Positif</option><option value="neg">Negatif</option></select></div>
+      <div><label for="p_hamil">Kelompok rentan</label><select id="p_hamil"><option value="0">Tidak/–</option><option value="1">Ibu hamil</option></select></div>
+    </div>
+    <h3 style="margin-top:14px">Gejala</h3><div class="symgrid" id="p_sym"></div>
+    <div style="margin-top:8px"><label for="p_lain">Gejala lain / catatan</label><input id="p_lain"></div>
+    <h3 style="margin-top:14px">Pangan yang dimakan</h3><div class="foodgrid" id="p_food"></div>
+    <p class="note" id="p_oleh"></p>
+  </div>
+  <div class="df"><button class="btn danger" id="dlgDel">Hapus</button><button class="btn ghost" data-close>Batal</button><button class="btn" id="dlgSave">Simpan</button></div>
+</dialog>
+<datalist id="faskesList"></datalist>
+
+<dialog id="dlgMap">
+  <div class="dh"><h3 style="margin:0">Pemetaan kolom Excel</h3><button class="btn ghost sm" data-close>Tutup</button></div>
+  <div class="db">
+    <p class="note" id="mapInfo"></p>
+    <div class="fields" style="margin-bottom:12px">
+      <div><label for="m_faskes">Faskes default</label><input id="m_faskes" list="faskesList"></div>
+      <div><label for="m_sakit">Status sakit default</label><select id="m_sakit"><option value="1">Semua baris = penderita</option><option value="0">Semua baris = tidak sakit</option></select></div>
+    </div>
+    <div class="mapgrid" id="mapGrid"></div>
+    <h3 style="margin-top:14px">Pratinjau 3 baris pertama</h3><div class="scroll" id="mapPrev"></div>
+  </div>
+  <div class="df"><button class="btn ghost" data-close>Batal</button><button class="btn" id="mapGo">Impor</button></div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ================= KONFIGURASI ================= */
+const API_URL = "https://script.google.com/macros/s/AKfycbxOlqgvydd6FNAuyMnUJ6XJau-AzHt7Si1gVzapFj0givoBMDMCseA__Vbd4pv7BPLUxA/exec"; // tempel URL Web App Apps Script (…/exec). Kosong = mode uji coba lokal.
+const FASKES = ["Dinas Kesehatan Kabupaten Kapuas","RSUD dr. H. Soemarno Sosroatmodjo Kuala Kapuas","Puskesmas Dadahup","Puskesmas Palangkau","Tidak berobat"];
+const POLL_MS = 60000;
+/* =============================================== */
+(function(){
+"use strict";
+const SYM=[["M","Mual"],["Mn","Muntah"],["D","Diare"],["SP","Sakit perut"],["P","Pusing"],["Dm","Demam"],["GN","Gangguan neurologis"],["L","Lainnya"]];
+const STAT={MS:"Masih sakit",Dr:"Dirawat",Rj:"Dirujuk",Sm:"Sembuh",Mg:"Meninggal"};
+const TABS=[["kejadian","Kejadian"],["linelist","Line-list"],["analisis","Analisis"],["pangan","Pangan"],["ira","Kriteria & IRA"],["717","7-1-7"],["tugas","Tugas"],["laporan","Laporan"]];
+const TL=[
+ ["onset1","Kasus pertama mulai sakit (onset)",null,null,"Otomatis dari onset paling awal"],
+ ["deteksi","Puskesmas mendeteksi dugaan KLB","onset1",168,"Deteksi ≤ 7 hari sejak kasus pertama"],
+ ["w1","Laporan W1 diterima Dinkes Kabupaten","deteksi",24,"Notifikasi ≤ 1×24 jam setelah deteksi"],
+ ["prov","W1 diteruskan ke Provinsi/Kemenkes, input SKDR","w1",24,"SOP Pelaporan langkah 3–4"],
+ ["ira","Verifikasi laporan dan IRA","w1",24,"SOP Aktivasi TGC langkah 3–4"],
+ ["aktivasi","Keputusan aktivasi TGC dan Surat Tugas","w1",24,"SOP Aktivasi TGC langkah 5–8"],
+ ["turun","TGC turun lapangan","aktivasi",24,"≤ 24 jam setelah aktivasi"],
+ ["pe","Penyelidikan epidemiologi dimulai","w1",24,"Verifikasi lapangan ≤ 24 jam setelah notifikasi"],
+ ["sampel","Sampel pangan dan spesimen klinik diambil","pe",24,"≤ 24 jam setelah PE dimulai"],
+ ["kirim","Sampel dikirim ke laboratorium","sampel",24,"Rantai dingin 2–8°C, ≤ 24 jam"],
+ ["inspeksi","Inspeksi sanitasi tempat pengolahan","w1",168,"Paralel dengan PE, ≤ 7 hari"],
+ ["sumberId","Sumber pangan teridentifikasi","",null,"Dari attack rate/inspeksi"],
+ ["sumberStop","Distribusi/konsumsi pangan sumber dihentikan","sumberId",24,"≤ 24 jam setelah teridentifikasi"],
+ ["lapsit","Laporan situasi awal","w1",168,"≤ 7 hari sejak notifikasi"],
+ ["pesem","Laporan PE sementara","pe",168,"≤ 7 hari setelah investigasi"],
+ ["cabut","Status KLB dicabut","",null,"Tidak ada kasus baru dalam 2× masa inkubasi terpanjang"]
+];
+const COMP=[["c1","Tim diterjunkan dan penyelidikan dimulai"],["c2","Analisis epidemiologi dan IRA selesai"],["c3","Konfirmasi laboratorium diperoleh"],["c4","Tatalaksana kasus sesuai triase berjalan, logistik aman"],["c5","Pengendalian sumber: pangan diamankan, desinfeksi, inspeksi sanitasi"],["c6","Komunikasi risiko dan edukasi masyarakat"],["c7","Mekanisme koordinasi lintas program/sektor terbentuk"]];
+const INC=[[0,1,"< 1 jam","Senyawa kimia (antimoni, kadmium, tembaga, fluorida, sianida, arsenik), toksin jamur, MSG, histamin","Mual, muntah, rasa logam, gejala neurologis"],[1,6,"1–6 jam","Staphylococcus aureus (enterotoksin), Bacillus cereus (tipe emetik), nitrit, organofosfat, karbamat","Mual, muntah, kram perut, diare"],[6,24,"6–24 jam","Clostridium perfringens, Bacillus cereus (tipe diare), Salmonella spp., Vibrio parahaemolyticus","Kram perut, diare, demam ringan"],[24,72,"24–72 jam","Salmonella spp., Shigella spp., E. coli patogenik, V. cholerae, Campylobacter, Burkholderia cocovenenans","Diare (kadang berdarah), demam, mual, muntah"],[72,1e9,"> 72 jam","Hepatitis A, Norovirus, parasit, botulisme, listeriosis","Diare, ikterik, gejala neurologis"]];
+const TASKS=[
+ {f:"Segera setelah laporan W1 (≤ 24 jam)",items:[
+  ["t1",1,"Verifikasi laporan W1 dan catat jam diterima","Epidemiolog / Bid. P2P","w1",24,["Konfirmasi ≥ 2 kasus gejala serupa setelah makan pangan yang sama","Isi jam W1 di tab 7-1-7"]],
+  ["t2",1,"Lakukan Initial Risk Assessment","Epidemiolog","w1",24,["Tab Kriteria & IRA; risiko tinggi = tanggulangi tanpa menunggu lab"]],
+  ["t3",1,"Keputusan aktivasi TGC dan terbitkan Surat Tugas","Kepala Dinkes / Sekretariat","w1",24,["Surat Tugas memuat susunan tim, tugas, target waktu"]],
+  ["t4",1,"Teruskan W1 ke Dinkes Provinsi/Kemenkes dan input SKDR","Surveilans","w1",24,["Gunakan draf W1 di tab Laporan"]],
+  ["t5",1,"Pastikan triase dan logistik tatalaksana di faskes","Dokter / Puskesmas","",null,["Prioritas balita, lansia, ibu hamil","Stok oralit, RL/NaCl 0,9%, antiemetik, antidot bila perlu"]],
+  ["t6",1,"Hentikan konsumsi/distribusi pangan tersangka, amankan sisa untuk sampel","Puskesmas / Kepala Desa / Sanitarian","",null,["Termasuk makanan yang dibawa pulang tamu"]],
+  ["t7",0,"Rapat persiapan dan briefing TGC","Kepala Dinkes / Koordinator TGC","aktivasi",24,["Pembagian tugas PE, medis, sampling, sanitasi, komunikasi","Checklist logistik Lampiran 2 Juknis"]]]},
+ {f:"Penyelidikan lapangan",items:[
+  ["t8",1,"TGC turun lapangan","TGC","aktivasi",24,[]],
+  ["t9",1,"Ambil sampel pangan (≥ 200 g/jenis) dan spesimen klinik","Analis / Sanitarian / Perawat","pe",24,["Muntahan, feses/rectal swab, swab tangan penjamah dan alat","Berita acara dengan saksi"]],
+  ["t10",1,"Kirim sampel ke laboratorium dengan rantai dingin","Analis / TGC","sampel",24,["Labkesda Kapuas, BBLKM Banjarbaru, atau BPOM Palangkaraya","Surat pengantar dan formulir permintaan pemeriksaan"]],
+  ["t11",0,"Wawancara tuan rumah dan penjamah; minta daftar peserta","Epidemiolog / Sanitarian","pe",24,[]],
+  ["t12",0,"Pencarian kasus aktif dan wawancara peserta yang tidak sakit","Surveilans / Bidan desa","",null,["Peserta tidak sakit diperlukan untuk attack rate per pangan"]],
+  ["t13",0,"Inspeksi sanitasi tempat pengolahan pangan","Sanitarian","w1",168,["Formulir Inspeksi Kesehatan Lingkungan TPP"]],
+  ["t14",0,"Komunikasi risiko kepada masyarakat","Promkes / Kepala Desa / Kader","",null,[]],
+  ["t15",0,"Hentikan distribusi pangan sumber setelah teridentifikasi","Sanitarian / Dinkes / BPOM","sumberId",24,[]]]},
+ {f:"Pemantauan dan pelaporan",items:[
+  ["t16",0,"Laporan harian KLB","Koordinator TGC","",null,["Kasus baru, sembuh, dirawat, meninggal, tindakan, kendala"]],
+  ["t17",0,"Laporan situasi awal","Epidemiolog / TGC","w1",168,[]],
+  ["t18",0,"Laporan PE sementara","Epidemiolog / TGC","pe",168,[]],
+  ["t19",0,"Early Action Review","Dinkes / TGC","w1",168,[]]]},
+ {f:"Penutupan",items:[
+  ["t20",0,"Rekomendasi pencabutan status KLB","Kepala Dinkes","",null,["Tidak ada kasus baru dalam 2× masa inkubasi terpanjang"]],
+  ["t21",0,"Laporan PE lengkap dan laporan akhir KLB","Epidemiolog / TGC","cabut",168,[]],
+  ["t22",0,"After Action Review","Dinkes","cabut",2160,[]]]}
+];
+
+/* ---------- state ---------- */
+let USER=null, KODE="", CUR=null /*{id,versi,data}*/, PL=[] /*[{id,versi,data,oleh}]*/;
+let editId=null, xl=null, saveTimer=null, saving=false, dirty=false, pollT=null;
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("on"),3200)}
+const pct=(a,b)=>b?(100*a/b):null;
+const f1=x=>x==null||isNaN(x)?"–":(Math.round(x*10)/10).toLocaleString("id-ID");
+const f2=x=>x==null||isNaN(x)||!isFinite(x)?"–":(Math.round(x*100)/100).toLocaleString("id-ID",{minimumFractionDigits:2,maximumFractionDigits:2});
+function dt(s){if(!s)return null;const d=new Date(s);return isNaN(d)?null:d}
+function fdt(s){const d=typeof s==="string"?dt(s):s;if(!d)return "–";return d.toLocaleString("id-ID",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})}
+const hrs=(a,b)=>(b-a)/36e5;
+function median(a){if(!a.length)return null;const s=[...a].sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2}
+function localISO(d){const p=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+"T"+p(d.getHours())+":"+p(d.getMinutes())}
+const canEv=()=>USER&&(USER.peran==="admin"||USER.peran==="tgc");
+function blankEvent(){return{nama:"",desa:"",kec:"",acara:"",makan:"",populasi:"",penyedia:"",pelapor:"",kronologi:"",tindakan:"",status:"aktif",foods:[],suspect:"",tl:{},comp:{},ira:{},tasks:{}}}
+function norm(d){const b=blankEvent();const o=Object.assign(b,d||{});["tl","comp","ira","tasks"].forEach(k=>{if(!o[k]||typeof o[k]!=="object")o[k]={}});if(!Array.isArray(o.foods))o.foods=[];return o}
+
+/* ---------- API (server / lokal) ---------- */
+const LKEY="tgc-klb-kapuas-lokal-v1";
+const Local={
+ db(){try{return JSON.parse(localStorage.getItem(LKEY))||{events:{},persons:{}}}catch(e){return{events:{},persons:{}}}},
+ put(d){localStorage.setItem(LKEY,JSON.stringify(d))},
+ id(p){return p+"-"+Date.now().toString(36).toUpperCase()+Math.random().toString(36).slice(2,6).toUpperCase()},
+ now(){return localISO(new Date())},
+ call(action,p,kode){
+  if(kode!=="UJI-ADMIN")throw new Error("Kode akses tidak dikenal. Mode uji coba memakai kode UJI-ADMIN.");
+  const u={nama:"Admin uji coba",peran:"admin",faskes:"Dinas Kesehatan Kabupaten Kapuas"},o=u.faskes+" / "+u.nama;const D=this.db();
+  switch(action){
+   case"login":return u;
+   case"listEvents":return Object.entries(D.events).map(([id,e])=>{const ps=Object.values(D.persons).filter(x=>x.kejadianId===id&&!x.dihapus);return{id,versi:e.versi,nama:e.data.nama,desa:e.data.desa,kec:e.data.kec,makan:e.data.makan,status:e.data.status||"aktif",diperbarui:e.diperbarui,orang:ps.length,sakit:ps.filter(x=>x.data.sakit).length,meninggal:ps.filter(x=>x.data.status==="Mg").length}}).sort((a,b)=>a.diperbarui<b.diperbarui?1:-1);
+   case"getEvent":{const e=D.events[p.id];if(!e)throw new Error("Kejadian tidak ditemukan.");return{event:{id:p.id,versi:e.versi,data:e.data},persons:Object.entries(D.persons).filter(([i,x])=>x.kejadianId===p.id&&!x.dihapus).map(([id,x])=>({id,versi:x.versi,data:x.data,oleh:x.oleh}))}}
+   case"saveEvent":{if(!p.id){const id=this.id("KLB");D.events[id]={versi:1,data:p.data,diperbarui:this.now()};this.put(D);return{id,versi:1}}const e=D.events[p.id];if(p.versi!=null&&p.versi!==e.versi)throw new Error("KONFLIK: data kejadian sudah diubah.");e.versi++;e.data=p.data;e.diperbarui=this.now();this.put(D);return{id:p.id,versi:e.versi}}
+   case"savePerson":{if(!p.id){const id=this.id("ORG");D.persons[id]={kejadianId:p.kejadianId,versi:1,data:p.data,oleh:o};this.put(D);return{id,versi:1}}const x=D.persons[p.id];if(p.versi!=null&&p.versi!==x.versi)throw new Error("KONFLIK: data orang sudah diubah.");x.versi++;x.data=p.data;this.put(D);return{id:p.id,versi:x.versi}}
+   case"bulkPersons":{(p.items||[]).forEach(d=>{D.persons[this.id("ORG")]={kejadianId:p.kejadianId,versi:1,data:d,oleh:o}});this.put(D);return{n:(p.items||[]).length}}
+   case"deletePerson":{D.persons[p.id].dihapus=true;this.put(D);return{id:p.id}}
+  }throw new Error("Aksi tidak dikenal")}
+};
+async function api(action,payload){
+ if(!API_URL)return Local.call(action,payload||{},KODE);
+ const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action,kode:KODE,payload:payload||{}})});
+ if(!r.ok)throw new Error("Server tidak merespons ("+r.status+")");
+ const j=await r.json();if(!j.ok)throw new Error(j.error||"Galat server");return j.data;
+}
+function setSync(t,bad){const s=$("#sync");if(s){s.textContent=t;s.style.color=bad?"#F5A39B":"#B8CAD6"}}
+
+/* ---------- views ---------- */
+function show(v){["vLogin","vList","vEvent"].forEach(x=>$("#"+x).classList.toggle("hidden",x!==v));window.scrollTo(0,0)}
+function whoText(){return `<b>${esc(USER.nama)}</b> · ${esc(USER.faskes)} · peran ${esc(USER.peran)}${API_URL?"":" · <b>mode uji coba lokal</b>"}`}
+
+async function doLogin(k){
+ KODE=(k||$("#kode").value).trim();if(!KODE)return;$("#loginMsg").textContent="Memeriksa…";
+ try{USER=await api("login");try{sessionStorage.setItem("tgc-kode",KODE)}catch(e){}$("#loginMsg").textContent="";$("#who1").innerHTML=whoText();$("#who2").innerHTML=whoText();
+  $("#btnNewEv").classList.toggle("hidden",!canEv());$("#lblImpEv").classList.toggle("hidden",!canEv());await loadList();show("vList")}
+ catch(e){$("#loginMsg").textContent=e.message;KODE=""}
+}
+function logout(){USER=null;KODE="";CUR=null;try{sessionStorage.removeItem("tgc-kode")}catch(e){}clearInterval(pollT);$("#kode").value="";show("vLogin")}
+
+let EVS=[];
+async function loadList(){
+ $("#evList").innerHTML='<p class="note">Memuat…</p>';
+ try{EVS=await api("listEvents");renderList()}catch(e){$("#evList").innerHTML=`<div class="banner red">${esc(e.message)}</div>`}
+}
+function renderList(){
+ const f=$("#fStat").value,ev=EVS.filter(e=>!f||e.status===f);
+ $("#evList").innerHTML=ev.length?ev.map(e=>`<div class="evrow"><div><div class="t">${esc(e.nama||"(tanpa nama)")}</div><div class="m">Desa ${esc(e.desa||"–")}, Kec. ${esc(e.kec||"–")} · makan ${e.makan?fdt(e.makan):"–"} · ${e.sakit} penderita, ${e.meninggal} meninggal, ${e.orang} orang tercatat · ${e.status==="ditutup"?"ditutup":"aktif"}</div></div><button class="btn sm" data-open="${esc(e.id)}">Buka</button></div>`).join("")
+ :`<div class="box"><p>${f==="aktif"?"Tidak ada kejadian aktif.":"Belum ada kejadian."}</p>${canEv()?'<p class="note">Pilih "Catat kejadian baru" saat menerima laporan W1 dari Puskesmas atau rumah sakit.</p>':'<p class="note">Kejadian dicatat oleh TGC Dinkes; setelah itu Puskesmas dapat mengisi line-list.</p>'}</div>`;
+}
+async function openEvent(id){
+ try{const r=await api("getEvent",{id});CUR={id:r.event.id,versi:r.event.versi,data:norm(r.event.data)};PL=r.persons;dirty=false;
+  show("vEvent");renderTabs();setSync("Tersinkron "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}));
+  clearInterval(pollT);pollT=setInterval(poll,POLL_MS)}
+ catch(e){toast(e.message)}
+}
+async function poll(){
+ if(!CUR||saving||dirty||document.querySelector("dialog[open]"))return;
+ try{const r=await api("getEvent",{id:CUR.id});const changed=r.event.versi!==CUR.versi||JSON.stringify(r.persons.map(p=>p.id+p.versi))!==JSON.stringify(PL.map(p=>p.id+p.versi));
+  if(changed){CUR={id:r.event.id,versi:r.event.versi,data:norm(r.event.data)};PL=r.persons;renderAll()}
+  setSync("Tersinkron "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}))}
+ catch(e){setSync("Gagal sinkron: "+e.message,true)}
+}
+function queueSave(){if(!canEv())return;dirty=true;setSync("Menyimpan…");clearTimeout(saveTimer);saveTimer=setTimeout(saveEvent,1200)}
+async function saveEvent(){
+ if(saving){saveTimer=setTimeout(saveEvent,800);return}
+ saving=true;try{const r=await api("saveEvent",{id:CUR.id,versi:CUR.versi,data:CUR.data});CUR.versi=r.versi;dirty=false;setSync("Tersimpan "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}))}
+ catch(e){if(/KONFLIK/.test(e.message)){toast("Data kejadian baru saja diubah anggota lain. Isian dimuat ulang; ulangi perubahan Anda.");dirty=false;saving=false;await poll();return}setSync("Gagal menyimpan: "+e.message,true);toast("Gagal menyimpan: "+e.message)}
+ saving=false;
+}
+
+/* ---------- derived ---------- */
+const E=()=>CUR.data;
+const PD=()=>PL.map(p=>p.data);
+const mealOf=p=>p.makan||E().makan||"";
+const cases=()=>PD().filter(p=>p.sakit);
+function category(p){if(!p.sakit)return"";const sf=E().suspect;let prob;if(sf)prob=p.foods&&p.foods[sf]===true;else prob=E().foods.length?E().foods.some(f=>p.foods&&p.foods[f]===true):true;if(prob&&p.lab==="pos")return"Konfirmasi";return prob?"Probable":"Suspek"}
+function incubs(){return cases().map(p=>{const a=dt(mealOf(p)),b=dt(p.onset);return a&&b?hrs(a,b):null}).filter(x=>x!=null&&x>=0)}
+function lf(n){let s=0;for(let i=2;i<=n;i++)s+=Math.log(i);return s}
+function fisher(a,b,c,d){const r1=a+b,r2=c+d,c1=a+c,n=r1+r2;const lp=x=>lf(r1)+lf(r2)+lf(c1)+lf(n-c1)-lf(n)-lf(x)-lf(r1-x)-lf(c1-x)-lf(r2-c1+x);const p0=lp(a);let s=0;for(let x=Math.max(0,c1-r2);x<=Math.min(r1,c1);x++){const v=lp(x);if(v<=p0+1e-7)s+=Math.exp(v)}return Math.min(1,s)}
+function foodStats(){const n=cases().length;return E().foods.map(f=>{let a=0,b=0,c=0,d=0,unk=0;PD().forEach(p=>{const v=p.foods?p.foods[f]:undefined;if(v===true){p.sakit?a++:b++}else if(v===false){p.sakit?c++:d++}else unk++});
+ let rr=null,lo=null,hi=null,corr=false;if(a+b>0&&c+d>0){let A=a,B=b,C=c,D=d;if(!a||!c){A+=.5;B+=.5;C+=.5;D+=.5;corr=true}rr=(A/(A+B))/(C/(C+D));const se=Math.sqrt(1/A-1/(A+B)+1/C-1/(C+D));lo=Math.exp(Math.log(rr)-1.96*se);hi=Math.exp(Math.log(rr)+1.96*se)}
+ return{f,a,b,c,d,unk,arE:pct(a,a+b),arU:pct(c,c+d),rr,lo,hi,p:(a+b+c+d)?fisher(a,b,c,d):null,corr,pctCases:pct(a,n)}})}
+function strongFood(){return foodStats().filter(s=>s.rr>1&&s.p!=null&&s.p<.05&&(s.lo>1||s.corr)&&(s.pctCases||0)>=50).sort((x,y)=>y.rr-x.rr)}
+function iraLevel(){const cs=cases(),I=E().ira;const deaths=cs.filter(p=>p.status==="Mg").length;const vuln=cs.filter(p=>(p.umur!==""&&p.umur!=null&&(+p.umur<5||+p.umur>=60))||p.hamil).length;const berat=cs.filter(p=>p.triase==="Berat").length;
+ const on=cs.map(p=>dt(p.onset)).filter(Boolean).sort((a,b)=>a-b);const stillNew=on.length?hrs(on[on.length-1],new Date())<24:false;
+ const tinggi=[],sedang=[];if(deaths)tinggi.push(deaths+" kematian");if(!I.sumberTerkontrol)tinggi.push("sumber belum terkontrol");if(stillNew)tinggi.push("masih ada kasus baru dalam 24 jam terakhir");if(vuln)tinggi.push(vuln+" penderita kelompok rentan");if(berat)tinggi.push(berat+" kasus berat");
+ if(cs.length>10)sedang.push("kasus > 10 ("+cs.length+")");if(I.perluasan)sedang.push("potensi perluasan");if(!strongFood().length)sedang.push("sumber belum terkonfirmasi");if(I.kapasitas)sedang.push("kapasitas faskes terbebani");if(I.aksesSulit)sedang.push("akses rujukan sulit");
+ let lv="Rendah";if(deaths||berat||(stillNew&&!I.sumberTerkontrol)||(vuln&&!I.sumberTerkontrol&&cs.length>10))lv="Tinggi";else if(sedang.length)lv="Sedang";if(!cs.length)lv="";return{lv,tinggi,sedang}}
+function klbStatus(){const cs=cases(),sf=strongFood(),deaths=cs.filter(p=>p.status==="Mg").length;const c1=cs.length>=2&&sf.length>0,c5=deaths>0;const met=c1||c5;return{met,c1,c5,sf,deaths,n:cs.length,label:met?"Memenuhi kriteria KLB":cs.length>=2?"Dugaan KLB, perlu analisis":"Belum memenuhi"}}
+function tlGet(k){const T=E().tl;if(k==="onset1"&&!T.onset1){const o=cases().map(p=>dt(p.onset)).filter(Boolean);return o.length?new Date(Math.min(...o)):null}return dt(T[k])}
+function tlRows(){const now=new Date();return TL.map(([id,label,ref,lim,note])=>{const at=tlGet(id),r=ref?tlGet(ref):null;let status="",dur=null,left=null,deadline=null;
+ if(lim&&r){deadline=new Date(r.getTime()+lim*36e5);if(at){dur=hrs(r,at);status=dur<=lim?"ok":"late"}else{left=hrs(now,deadline);status=left>=0?"run":"over"}}
+ return{id,label,note,at,deadline,status,dur,left,auto:id==="onset1"&&!E().tl.onset1&&at}})}
+function dupNames(){const m={};PL.forEach(p=>{const k=(p.data.nama||"").toLowerCase().replace(/\s+/g," ").trim();if(k)(m[k]=m[k]||[]).push(p)});return Object.values(m).filter(a=>a.length>1)}
+
+/* ---------- render ---------- */
+function renderTabs(){$("#tabs").innerHTML=TABS.map(([k,l],i)=>`<button role="tab" data-tab="${k}" aria-selected="${i===0}">${l}</button>`).join("");showTab("kejadian")}
+function showTab(k){$$("#tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===k));$$("section.panel").forEach(s=>s.classList.toggle("on",s.id==="p-"+k));renderAll()}
+function renderAll(){if(!CUR)return;renderHeader();const on=($("section.panel.on")||{}).id;
+ ({"p-kejadian":renderKejadian,"p-linelist":renderLL,"p-analisis":renderAnalisis,"p-pangan":renderPangan,"p-ira":renderIRA,"p-717":render717,"p-tugas":renderTasks,"p-laporan":renderLaporan}[on]||(()=>{}))()}
+function renderHeader(){const e=E(),cs=cases(),d=cs.filter(p=>p.status==="Mg").length,ira=iraLevel(),k=klbStatus();
+ $("#hTitle").textContent=e.nama||"Kejadian tanpa nama";$("#hSub").textContent=`Desa ${e.desa||"–"} · Kecamatan ${e.kec||"–"} · ${CUR.id}`;
+ $("#hChips").innerHTML=[`<span class="chip">${cs.length} penderita</span>`,`<span class="chip ${d?"bad":""}">${d} meninggal</span>`,ira.lv?`<span class="chip ${ira.lv==="Tinggi"?"bad":ira.lv==="Sedang"?"warn":"ok"}">IRA ${ira.lv.toLowerCase()}</span>`:"",`<span class="chip ${k.met?"bad":"warn"}">${k.label}</span>`,e.status==="ditutup"?'<span class="chip ok">Ditutup</span>':""].join("");
+ const r=tlRows(),g=id=>r.find(x=>x.id===id);
+ const seg=(num,what,row,ex)=>{let cls="",st="Belum diisi";if(row){if(row.status==="ok"){cls="ok";st="Tercapai ("+f1(row.dur)+" jam)"}else if(row.status==="late"){cls="late";st="Terlambat ("+f1(row.dur)+" jam)"}else if(row.status==="run"){cls="run";st="Berjalan, sisa "+f1(row.left)+" jam"}else if(row.status==="over"){cls="late";st="Lewat batas "+f1(-row.left)+" jam"}}if(ex){st=ex.st;cls=ex.cls}return `<div class="seg ${cls}"><div class="num">${num}</div><div class="what">${what}</div><div class="state">${st}</div></div>`};
+ const done=COMP.filter(c=>e.comp[c[0]]).length,w1=tlGet("w1");let ex;if(w1){const left=168-hrs(w1,new Date());ex=done===7?{cls:"ok",st:"7/7 komponen selesai"}:left<0?{cls:"late",st:done+"/7 komponen, lewat batas"}:{cls:"run",st:done+"/7 komponen, sisa "+f1(left/24)+" hari"}}else ex={cls:"",st:done+"/7 komponen, menunggu jam W1"};
+ $("#s717").innerHTML=seg(7,"hari: deteksi sejak kasus pertama",g("deteksi"))+seg(1,"hari: notifikasi W1 setelah deteksi",g("w1"))+seg(7,"hari: respons awal sejak notifikasi",null,ex)}
+function lockFields(){const ro=!canEv();$$("#p-kejadian input,#p-kejadian textarea,#p-kejadian select,#p-ira input,#p-717 input,#p-tugas input,#p-tugas textarea,#tindakan,#suspectFood").forEach(el=>el.disabled=ro);
+ $("#roleNote").textContent=ro?"Peran Puskesmas: bagian ini hanya bisa dilihat. Puskesmas mengisi data di tab Line-list.":"Perubahan tersimpan otomatis ke server dan terlihat oleh seluruh anggota TGC."}
+function renderKejadian(){const e=E();$$("[data-e]").forEach(el=>{if(document.activeElement!==el)el.value=e[el.dataset.e]||(el.dataset.e==="status"?"aktif":"")});if(document.activeElement!==$("#e_menu"))$("#e_menu").value=e.foods.join(", ");
+ const tgl=e.makan?dt(e.makan).toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"}):"[tanggal acara]";
+ $("#caseDef").innerHTML=`<p><b>Kasus suspek:</b> orang yang menghadiri atau menerima makanan dari ${esc(e.acara||"[acara]")} di Desa ${esc(e.desa||"–")}, Kecamatan ${esc(e.kec||"–")} pada ${esc(tgl)} dan dalam 72 jam setelah makan mengalami sedikitnya satu gejala: mual, muntah, diare (≥ 3 kali/24 jam) atau sakit perut.</p><p><b>Kasus probable:</b> kasus suspek yang terbukti mengonsumsi ${esc(e.suspect||"[pangan tersangka]")}.</p><p><b>Kasus konfirmasi:</b> kasus probable dengan hasil laboratorium positif terhadap agen penyebab yang sama dengan sampel pangan.</p><p class="note">Batas 72 jam dapat dipersempit setelah masa inkubasi diketahui.</p>`;lockFields()}
+function renderLL(){const e=E(),fkSel=$("#f_fk"),cur=fkSel.value,fks=[...new Set(PD().map(p=>p.faskes).filter(Boolean))];fkSel.innerHTML='<option value="">Semua</option>'+fks.map(f=>`<option ${f===cur?"selected":""}>${esc(f)}</option>`).join("");
+ const q=$("#f_q").value.toLowerCase(),sk=$("#f_sk").value;
+ const rows=PL.filter(({data:p})=>(!q||((p.nama||"")+" "+(p.alamat||"")).toLowerCase().includes(q))&&(!fkSel.value||p.faskes===fkSel.value)&&(sk===""||String(+p.sakit)===sk));
+ let h=`<thead><tr><th>No</th><th>Nama</th><th class="n">Umur</th><th>JK</th><th>Alamat</th><th>Faskes</th><th>Sakit</th><th>Gejala</th><th>Makan</th><th>Onset</th><th class="n">Inkubasi (jam)</th><th>Triase</th><th>Status</th><th>Kategori</th><th>Lab</th>${e.foods.map(f=>`<th title="${esc(f)}">${esc(f.length>10?f.slice(0,9)+"…":f)}</th>`).join("")}<th>Diinput oleh</th><th></th></tr></thead><tbody>`;
+ rows.forEach((w,n)=>{const p=w.data,a=dt(mealOf(p)),b=dt(p.onset),inc=a&&b&&p.sakit?hrs(a,b):null,cat=category(p);
+  h+=`<tr class="${p.sakit?"sick":""}"><td>${n+1}</td><td>${esc(p.nama)}</td><td class="n">${esc(p.umur)}</td><td>${esc(p.jk)}</td><td>${esc(p.alamat)}</td><td>${esc(p.faskes)}</td><td>${p.sakit?'<span class="tag red">Ya</span>':'<span class="tag">Tidak</span>'}</td><td>${esc((p.gejala||[]).join(", "))}</td><td>${p.makan?fdt(p.makan):'<span class="note">default</span>'}</td><td>${p.sakit?fdt(p.onset):""}</td><td class="n">${inc!=null?f1(inc):""}</td><td>${esc(p.triase)}</td><td>${esc(STAT[p.status]||"")}</td><td>${cat?`<span class="tag ${cat==="Konfirmasi"?"red":cat==="Probable"?"amb":""}">${cat}</span>`:""}</td><td>${p.lab==="pos"?"Positif":p.lab==="neg"?"Negatif":p.lab==="proses"?"Proses":""}</td>${e.foods.map(f=>{const v=p.foods?p.foods[f]:undefined;return`<td>${v===true?"Ya":v===false?"Tdk":"?"}</td>`}).join("")}<td class="note">${esc(w.oleh||"")}</td><td><button class="btn ghost sm" data-edit="${esc(w.id)}">Ubah</button></td></tr>`});
+ if(!rows.length)h+=`<tr><td colspan="${17+e.foods.length}" style="padding:22px;text-align:center;color:var(--muted)">Belum ada data. Tambah orang satu per satu, atau impor rekap Excel dari faskes.</td></tr>`;
+ $("#llTable").innerHTML=h+"</tbody>";const cs=cases().length;$("#llCount").textContent=`${PL.length} orang tercatat · ${cs} sakit · ${PL.length-cs} tidak sakit`;
+ const du=dupNames();$("#dupWarn").innerHTML=du.length?`<div class="banner">Nama yang sama tercatat lebih dari sekali: ${du.map(a=>"<b>"+esc(a[0].data.nama)+"</b> ("+a.map(x=>esc(x.data.faskes||"?")).join(", ")+")").join("; ")}. Periksa apakah orang yang sama berobat di dua faskes, lalu gabungkan agar tidak terhitung ganda.</div>`:""}
+function renderAnalisis(){const P=PD(),cs=cases(),n=cs.length,pop=+E().populasi||0,denom=pop||P.length,deaths=cs.filter(p=>p.status==="Mg").length,inc=incubs(),dir=cs.filter(p=>p.status==="Dr"||p.status==="Rj").length;
+ $("#kpis").innerHTML=[[n,"Penderita"],[denom?f1(pct(n,denom))+"%":"–","Attack rate keseluruhan"+(pop?" (populasi "+pop+")":P.length?" (dari line-list)":"")],[deaths,"Meninggal"],[n?f1(pct(deaths,n))+"%":"–","CFR"],[dir,"Dirawat/dirujuk"],[inc.length?f1(median(inc))+" jam":"–","Median masa inkubasi"]].map(([v,l])=>`<div class="kpi"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("");
+ $("#symDist").innerHTML=n?SYM.map(([c,l])=>{const k=cs.filter(p=>(p.gejala||[]).includes(c)).length,pc=pct(k,n);return`<div class="hbar"><span>${l}</span><div class="track"><div class="fill" style="width:${pc}%"></div></div><span class="n">${k} (${f1(pc)}%)</span></div>`}).join(""):'<p class="note">Belum ada penderita.</p>';
+ if(inc.length){const md=median(inc),mn=Math.min(...inc),mx=Math.max(...inc),mean=inc.reduce((a,b)=>a+b,0)/inc.length,g=INC.find(r=>md>=r[0]&&md<r[1]);const top=SYM.map(([c,l])=>[l,cs.filter(p=>(p.gejala||[]).includes(c)).length]).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0].toLowerCase());
+  $("#incub").innerHTML=`<p>Dari ${inc.length} penderita dengan waktu makan dan onset lengkap.</p><table><tr><th>Minimum</th><th>Median</th><th>Rerata</th><th>Maksimum</th></tr><tr><td>${f1(mn)} jam</td><td><b>${f1(md)} jam</b></td><td>${f1(mean)} jam</td><td>${f1(mx)} jam</td></tr></table><div style="margin-top:10px">${INC.map(r=>{const k=inc.filter(x=>x>=r[0]&&x<r[1]).length;return`<div class="hbar"><span>${r[2]}</span><div class="track"><div class="fill" style="width:${pct(k,inc.length)}%"></div></div><span class="n">${k}</span></div>`}).join("")}</div><div class="banner green" style="margin-top:10px">Median ${f1(md)} jam masuk kelompok <b>${g[2]}</b>. Agen yang konsisten (Juknis Bab III): ${g[3]}. Gejala yang diharapkan: ${g[4].toLowerCase()}. Gejala terbanyak: ${top.join(", ")}.</div><p class="note">Hipotesis kerja untuk memilih pemeriksaan laboratorium, bukan diagnosis etiologi.</p>`}
+ else $("#incub").innerHTML='<p class="note">Isi waktu makan dan onset penderita untuk menghitung masa inkubasi.</p>';
+ renderEpi();
+ const AG=[["0–4",0,5],["5–14",5,15],["15–24",15,25],["25–44",25,45],["45–59",45,60],["≥ 60",60,999]],hasNon=P.some(p=>!p.sakit);
+ const tbl=(rows,lab)=>`<table><tr><th>${lab}</th><th class="n">Sakit</th>${hasNon?'<th class="n">Total makan</th><th class="n">AR (%)</th>':'<th class="n">% kasus</th>'}</tr>${rows.map(([l,s,t])=>`<tr><td>${esc(l)}</td><td class="n">${s}</td>${hasNon?`<td class="n">${t}</td><td class="n">${f1(pct(s,t))}</td>`:`<td class="n">${f1(pct(s,n))}</td>`}</tr>`).join("")}</table>`;
+ const ar=AG.map(([l,a,b])=>{const g=P.filter(p=>p.umur!==""&&p.umur!=null&&+p.umur>=a&&+p.umur<b);return[l,g.filter(p=>p.sakit).length,g.length]});
+ $("#ageTbl").innerHTML=tbl(ar,"Umur (tahun)")+(hasNon?"":'<p class="note">Tambahkan peserta tidak sakit agar AR per kelompok dapat dihitung.</p>');
+ const sx=[["Laki-laki","L"],["Perempuan","P"]].map(([l,c])=>{const g=P.filter(p=>p.jk===c);return[l,g.filter(p=>p.sakit).length,g.length]});
+ $("#sexTbl").innerHTML=tbl(sx,"Jenis kelamin")+`<table style="margin-top:12px"><tr><th>Triase</th><th class="n">Penderita</th></tr>${["Ringan","Sedang","Berat",""].map(t=>`<tr><td>${t||"Belum diisi"}</td><td class="n">${cs.filter(p=>(p.triase||"")===t).length}</td></tr>`).join("")}</table>`;
+ const grp=k=>{const m={};cs.forEach(p=>{const x=(p[k]||"").trim()||"Tidak diketahui";m[x]=(m[x]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1])};
+ $("#placeTbl").innerHTML=`<table><tr><th>Faskes</th><th class="n">Penderita</th></tr>${grp("faskes").map(([k,v])=>`<tr><td>${esc(k)}</td><td class="n">${v}</td></tr>`).join("")}</table><table style="margin-top:12px"><tr><th>Alamat</th><th class="n">Penderita</th></tr>${grp("alamat").slice(0,15).map(([k,v])=>`<tr><td>${esc(k)}</td><td class="n">${v}</td></tr>`).join("")}</table>`;
+ $("#statTbl").innerHTML=`<table><tr><th>Status</th><th class="n">Penderita</th><th class="n">%</th></tr>${[...Object.keys(STAT),""].map(k=>{const v=cs.filter(p=>(p.status||"")===k).length;return`<tr><td>${STAT[k]||"Belum diisi"}</td><td class="n">${v}</td><td class="n">${f1(pct(v,n))}</td></tr>`}).join("")}</table>`}
+function renderEpi(){const cs=cases().filter(p=>dt(p.onset)),bin=+$("#binSel").value,box=$("#epicurve");if(!cs.length){box.innerHTML='<p class="note">Kurva epidemik muncul setelah waktu onset diisi.</p>';$("#epiNote").innerHTML="";return}
+ const ons=cs.map(p=>dt(p.onset)),meal=dt(E().makan);let t0=new Date(Math.min(...ons,meal?meal.getTime():Infinity));t0.setMinutes(0,0,0);if(bin===24)t0.setHours(0);else t0.setHours(Math.floor(t0.getHours()/bin)*bin);
+ const tMax=Math.max(...ons),nb=Math.max(1,Math.ceil(hrs(t0,tMax)/bin)+1),cnt=new Array(nb).fill(0);ons.forEach(d=>{cnt[Math.min(nb-1,Math.floor(hrs(t0,d)/bin))]++});
+ const W=Math.max(640,nb*28+70),H=260,L=44,T=14,pw=W-L-14,ph=H-60-T,bw=pw/nb,mx=Math.max(...cnt),yt=Math.max(1,Math.ceil(mx/5));
+ let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Kurva epidemik">`;for(let y=0;y<=mx;y+=yt){const yy=T+ph-ph*y/mx;s+=`<line x1="${L}" x2="${W-14}" y1="${yy}" y2="${yy}" stroke="var(--line)"/><text x="${L-6}" y="${yy+4}" text-anchor="end" font-size="11">${y}</text>`}
+ cnt.forEach((c,i)=>{const h=ph*c/mx,x=L+i*bw;if(c)s+=`<rect x="${x+1}" y="${T+ph-h}" width="${bw-2}" height="${h}" fill="var(--bar)"><title>${c} kasus</title></rect>`;const d=new Date(t0.getTime()+i*bin*36e5);if(i%Math.ceil(nb/18)===0){const lab=bin===24?d.toLocaleDateString("id-ID",{day:"2-digit",month:"short"}):d.toLocaleDateString("id-ID",{day:"2-digit",month:"short"})+" "+String(d.getHours()).padStart(2,"0")+":00";s+=`<text transform="translate(${x+bw/2},${T+ph+12}) rotate(-40)" text-anchor="end" font-size="10.5">${lab}</text>`}});
+ if(meal){const x=L+hrs(t0,meal)/bin*bw;s+=`<line x1="${x}" x2="${x}" y1="${T}" y2="${T+ph}" stroke="var(--amber)" stroke-width="2" stroke-dasharray="5 4"/><text x="${x+5}" y="${T+11}" font-size="11" style="fill:var(--amber)">Waktu makan</text>`}
+ box.innerHTML=s+`<text x="${L+pw/2}" y="${H-4}" text-anchor="middle" font-size="11">Waktu mulai sakit</text></svg>`;
+ const span=hrs(new Date(Math.min(...ons)),new Date(tMax)),md=median(incubs()),meals=new Set(cs.map(p=>mealOf(p)).filter(Boolean));
+ $("#epiNote").innerHTML=`<p style="margin-top:8px">${meals.size<=1&&md!=null&&span<=Math.max(24,2*md+12)?`Sebaran onset ${f1(span)} jam dengan satu waktu paparan: pola <b>konsisten dengan point source</b>.`:meals.size>1?`Ada ${meals.size} waktu makan berbeda di line-list; telusuri beberapa sesi makan atau makanan dibawa pulang (<b>continuous common source</b>).`:`Sebaran onset ${f1(span)} jam relatif panjang; telusuri paparan lanjutan atau penularan orang-ke-orang (<b>propagated</b>).`}</p>`}
+function renderPangan(){const e=E(),st=foodStats(),non=PD().filter(p=>!p.sakit).length;
+ $("#foodWarn").innerHTML=!e.foods.length?'<div class="banner">Isi daftar menu di tab Kejadian terlebih dahulu.</div>':!non?'<div class="banner red">Belum ada peserta yang tidak sakit di line-list. RR dan uji kemaknaan belum valid.</div>':"";
+ const strong=new Set(strongFood().map(s=>s.f));
+ $("#foodTbl").innerHTML=`<thead><tr><th rowspan="2">Jenis pangan</th><th colspan="3">Makan</th><th colspan="3">Tidak makan</th><th rowspan="2" class="n">RR</th><th rowspan="2" class="n">IK 95%</th><th rowspan="2" class="n">p (Fisher)</th><th rowspan="2" class="n">% penderita makan</th></tr><tr><th class="n">Sakit</th><th class="n">Total</th><th class="n">AR %</th><th class="n">Sakit</th><th class="n">Total</th><th class="n">AR %</th></tr></thead><tbody>${[...st].sort((a,b)=>(b.rr||0)-(a.rr||0)).map(s=>`<tr class="${strong.has(s.f)?"hl":""}"><td><b>${esc(s.f)}</b>${strong.has(s.f)?' <span class="tag amb">tersangka kuat</span>':""}${s.unk?` <span class="note">(${s.unk} tdk diketahui)</span>`:""}</td><td class="n">${s.a}</td><td class="n">${s.a+s.b}</td><td class="n">${f1(s.arE)}</td><td class="n">${s.c}</td><td class="n">${s.c+s.d}</td><td class="n">${f1(s.arU)}</td><td class="n"><b>${f2(s.rr)}</b>${s.corr?"*":""}</td><td class="n">${s.rr?f2(s.lo)+"–"+f2(s.hi):"–"}</td><td class="n">${s.p==null?"–":s.p<.001?"&lt;0,001":s.p.toLocaleString("id-ID",{minimumFractionDigits:3,maximumFractionDigits:3})}</td><td class="n">${f1(s.pctCases)}</td></tr>`).join("")}</tbody>`;
+ $("#suspectFood").innerHTML='<option value="">– belum ditetapkan –</option>'+e.foods.map(f=>`<option ${f===e.suspect?"selected":""}>${esc(f)}</option>`).join("");
+ const sf=strongFood();$("#foodInterp").innerHTML=(sf.length?`<p>Asosiasi bermakna: ${sf.map(s=>`<b>${esc(s.f)}</b> (AR makan ${f1(s.arE)}% vs tidak ${f1(s.arU)}%, RR ${f2(s.rr)})`).join("; ")}.</p>`:'<p class="note">Belum ada pangan dengan asosiasi bermakna.</p>')+'<p class="note">* Koreksi Haldane (+0,5) bila ada sel nol.</p>';lockFields()}
+function renderIRA(){const k=klbStatus(),row=(ok,t,n)=>`<div class="check"><span class="tag ${ok===true?"red":ok==="?"?"amb":""}">${ok===true?"Terpenuhi":ok==="?"?"Perlu dinilai":"Belum"}</span><span>${t}${n?`<br><span class="note">${n}</span>`:""}</span></div>`;
+ $("#klbCrit").innerHTML=row(k.c1?true:k.n>=2?"?":false,"≥ 2 orang sakit dengan gejala serupa setelah mengonsumsi pangan, dan analisis epidemiologi membuktikan pangan sebagai sumber.",k.n>=2?(k.sf.length?"Didukung: "+k.sf.map(s=>esc(s.f)).join(", "):k.n+" penderita; bukti analitik belum bermakna."):"")+row("?","Masalah kesehatan akibat pangan yang sebelumnya tidak ada di wilayah tersebut.")+row("?","Peningkatan kesakitan ≥ 2 kali dibanding periode sebelumnya.")+row("?","Kenaikan CFR ≥ 50% dibanding periode sebelumnya.")+row(k.c5,"Terdapat kasus kematian akibat keracunan pangan.",k.deaths?k.deaths+" kematian.":"")+`<div class="banner ${k.met?"red":""}" style="margin-top:10px">${k.met?"Memenuhi kriteria KLB. Kepala Dinkes mengadvokasi penetapan status KLB kepada Bupati.":"Status: <b>"+k.label.toLowerCase()+"</b>."}</div>`;
+ $$("[data-ira]").forEach(el=>el.checked=!!E().ira[el.dataset.ira]);const I=iraLevel();
+ $$("#iraBar div").forEach(d=>d.classList.toggle("on",(I.lv==="Rendah"&&d.classList.contains("r"))||(I.lv==="Sedang"&&d.classList.contains("s"))||(I.lv==="Tinggi"&&d.classList.contains("t"))));
+ $("#iraWhy").innerHTML=!I.lv?'<p class="note">Belum ada penderita.</p>':`<p>${I.tinggi.length?"Faktor risiko tinggi: "+I.tinggi.join("; ")+". ":""}${I.sedang.length?"Faktor risiko sedang: "+I.sedang.join("; ")+".":""}</p>${I.lv==="Tinggi"?'<div class="banner red">Risiko tinggi: tanggulangi segera tanpa menunggu konfirmasi laboratorium.</div>':""}`;lockFields()}
+function render717(){const e=E(),r=tlRows();
+ $("#tlTbl").innerHTML=`<thead><tr><th>Tonggak</th><th>Waktu terjadi</th><th>Batas waktu</th><th>Capaian</th><th>Acuan</th></tr></thead><tbody>${r.map(x=>{const st=x.status==="ok"?`<span class="tag grn">Tepat waktu · ${f1(x.dur)} jam</span>`:x.status==="late"?`<span class="tag red">Terlambat · ${f1(x.dur)} jam</span>`:x.status==="run"?`<span class="tag amb">Sisa ${f1(x.left)} jam</span>`:x.status==="over"?`<span class="tag red">Lewat ${f1(-x.left)} jam</span>`:'<span class="note">–</span>';const v=e.tl[x.id]||(x.auto?localISO(x.at):"");return`<tr><td><b>${x.label}</b></td><td><input type="datetime-local" data-tl="${x.id}" value="${v}" aria-label="${esc(x.label)}" style="min-width:190px">${x.auto?'<div class="note">otomatis</div>':""}</td><td>${x.deadline?fdt(x.deadline):'<span class="note">–</span>'}</td><td>${st}</td><td class="note">${x.note}</td></tr>`}).join("")}</tbody>`;
+ $("#comp7").innerHTML=COMP.map(([k,l],i)=>`<label class="check"><input type="checkbox" data-comp="${k}" ${e.comp[k]?"checked":""}> <span>${i+1}. ${l}${e.comp[k]?` <span class="note">(${fdt(e.comp[k])})</span>`:""}</span></label>`).join("");lockFields()}
+function renderTasks(){const e=E(),all=TASKS.flatMap(g=>g.items),done=all.filter(t=>e.tasks[t[0]]&&e.tasks[t[0]].d).length;
+ $("#taskKpi").innerHTML=`<div class="kpi"><div class="v">${done}/${all.length}</div><div class="l">tugas selesai</div></div><div class="kpi"><div class="v">${all.filter(t=>t[1]&&!(e.tasks[t[0]]&&e.tasks[t[0]].d)).length}</div><div class="l">tugas mendesak tersisa</div></div>`;
+ $("#taskList").innerHTML=TASKS.map(g=>`<h3 style="margin-top:18px">${g.f}</h3>`+g.items.map(([id,u,t,pic,ref,h,steps])=>{const s=e.tasks[id]||{};const r=ref?tlGet(ref):null;const due=h&&r?"Batas "+fdt(new Date(r.getTime()+h*36e5)):h&&ref?"Batas dihitung setelah jam '"+(TL.find(x=>x[0]===ref)||[0,ref])[1]+"' diisi":"Segera";const late=h&&r&&!s.d&&new Date()>new Date(r.getTime()+h*36e5);
+  return`<div class="task ${u?"urgent":""} ${s.d?"done":""}"><input type="checkbox" id="tk_${id}" data-task="${id}" ${s.d?"checked":""}><div><label class="tt" for="tk_${id}">${t}</label><div class="meta"><span class="tag">${pic}</span><span class="tag ${s.d?"grn":late?"red":u?"amb":""}">${s.d?"Selesai "+fdt(s.at)+(s.by?" oleh "+esc(s.by):""):due}</span></div>${steps.length?`<ul>${steps.map(x=>`<li>${x}</li>`).join("")}</ul>`:""}</div><details ${s.n?"open":""}><summary>Catatan</summary><textarea data-tnote="${id}" placeholder="Hasil, kendala, nama petugas…">${esc(s.n||"")}</textarea></details></div>`}).join("")).join("");lockFields()}
+function report(){const e=E(),cs=cases(),n=cs.length,deaths=cs.filter(p=>p.status==="Mg").length,type=$("#repType").value;
+ const gej=SYM.map(([c,l])=>[l,cs.filter(p=>(p.gejala||[]).includes(c)).length]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]).map(([l,k])=>`${l.toLowerCase()} ${k} (${f1(pct(k,n))}%)`).join(", ")||"-";
+ const ons=cs.map(p=>dt(p.onset)).filter(Boolean).sort((a,b)=>a-b),fk={};cs.forEach(p=>{const k=p.faskes||"Tidak diketahui";fk[k]=(fk[k]||0)+1});const fkT=Object.entries(fk).map(([k,v])=>`${k} ${v} orang`).join("; ")||"-";
+ const sf=strongFood(),inc=incubs(),md=median(inc),g=md!=null?INC.find(r=>md>=r[0]&&md<r[1]):null,sumber=e.suspect||(sf[0]&&sf[0].f)||"masih ditelusuri",pop=+e.populasi||0,ira=iraLevel(),cnt=k=>cs.filter(p=>p.status===k).length;
+ const today=new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
+ if(type==="w1")return`LAPORAN KLB/WABAH (W1)\nDugaan KLB Keracunan Pangan\n\nKepada Yth. Kepala Dinas Kesehatan Provinsi Kalimantan Tengah\n\n1. Lokasi kejadian      : Desa ${e.desa||"-"}, Kecamatan ${e.kec||"-"}, Kabupaten Kapuas\n2. Tempat paparan       : ${e.acara||"-"}${e.penyedia?" (penyedia: "+e.penyedia+")":""}\n3. Waktu makan          : ${e.makan?fdt(e.makan):"-"}\n4. Kasus pertama sakit  : ${ons.length?fdt(ons[0]):"-"}\n5. Jumlah penderita     : ${n} orang${pop?" dari ±"+pop+" orang yang makan (AR "+f1(pct(n,pop))+"%)":""}\n6. Jumlah meninggal     : ${deaths} orang (CFR ${f1(pct(deaths,n))}%)\n7. Gejala               : ${gej}\n8. Faskes               : ${fkT}\n9. Dugaan sumber pangan : ${sumber}\n10. Status penderita    : dirawat ${cnt("Dr")}, dirujuk ${cnt("Rj")}, rawat jalan ${cnt("MS")}, sembuh ${cnt("Sm")}\n11. Tindakan:\n${e.tindakan||"-"}\n\nKuala Kapuas, ${today}\nKepala Dinas Kesehatan Kabupaten Kapuas\n\n\ndr. AGUS WALUYO, M.M.\nNIP 197108212000121002`;
+ if(type==="harian"){const baru=cs.filter(p=>dt(p.onset)&&hrs(dt(p.onset),new Date())<=24).length;return`LAPORAN HARIAN KLB KERACUNAN PANGAN\nDesa ${e.desa}, Kecamatan ${e.kec}, Kabupaten Kapuas\nTanggal: ${today}\n\nKasus kumulatif     : ${n}\nKasus baru 24 jam   : ${baru}\nOnset terakhir      : ${ons.length?fdt(ons[ons.length-1]):"-"}\nDirawat inap        : ${cnt("Dr")}\nDirujuk             : ${cnt("Rj")}\nRawat jalan         : ${cnt("MS")}\nSembuh              : ${cnt("Sm")}\nMeninggal           : ${deaths}\nIRA                 : ${ira.lv||"-"}\nHasil lab positif   : ${cs.filter(p=>p.lab==="pos").length}\n\nTindakan:\n${e.tindakan||"-"}\n\nKendala:\n- \n\nKoordinator TGC (Kepala Bidang P2P)`}
+ return`KERANGKA LAPORAN SITUASI AWAL / PE SEMENTARA\nDugaan KLB Keracunan Pangan, Desa ${e.desa}, Kecamatan ${e.kec}\n\nI. PENDAHULUAN\n${e.kronologi||"[kronologi]"}\n\nII. METODE\nDefinisi kasus: suspek = orang yang makan di ${e.acara||"[acara]"} dan dalam 72 jam mengalami mual, muntah, diare atau sakit perut; probable = suspek yang makan ${e.suspect||"[pangan tersangka]"}; konfirmasi = probable dengan lab positif.\nAnalisis: deskriptif orang–tempat–waktu, attack rate spesifik pangan, RR dan uji Fisher.\n\nIII. HASIL\nPenderita ${n}${pop?" dari ±"+pop+" (AR "+f1(pct(n,pop))+"%)":""}, meninggal ${deaths} (CFR ${f1(pct(deaths,n))}%).\nGejala: ${gej}.\nMasa inkubasi: ${inc.length?"median "+f1(md)+" jam (rentang "+f1(Math.min(...inc))+"–"+f1(Math.max(...inc))+" jam)":"-"}.\nAttack rate per pangan: ${sf.length?sf.map(s=>`${s.f} RR ${f2(s.rr)} (IK95% ${f2(s.lo)}–${f2(s.hi)})`).join("; "):"belum ada asosiasi bermakna"}.\nHasil laboratorium: ${cs.filter(p=>p.lab==="pos").length?"positif "+cs.filter(p=>p.lab==="pos").length:"menunggu"}.\nInspeksi sanitasi: [temuan].\n\nIV. KESIMPULAN SEMENTARA\n${klbStatus().met?"Memenuhi kriteria KLB keracunan pangan":"Dugaan KLB keracunan pangan"}, sumber diduga ${sumber}${g?"; inkubasi "+g[2]+" konsisten dengan "+g[3].split(",").slice(0,2).join(",")+" (hipotesis)":""}. IRA: ${ira.lv||"-"}.\n\nV. REKOMENDASI\n1. Surveilans aktif harian sampai 2× masa inkubasi terpanjang tanpa kasus baru.\n2. Tindak lanjut hasil inspeksi sanitasi.\n3. Edukasi keamanan pangan.\n\nLampiran: line-listing, kurva epidemik, tabel attack rate, berita acara sampel, dokumentasi.`}
+function renderLaporan(){if(document.activeElement!==$("#tindakan"))$("#tindakan").value=E().tindakan||"";$("#repText").textContent=report();lockFields()}
+
+/* ---------- events ---------- */
+document.addEventListener("input",ev=>{const el=ev.target;if(!CUR)return;
+ if(el.dataset.e){E()[el.dataset.e]=el.value;queueSave();renderHeader();if(el.id==="tindakan")$("#repText").textContent=report()}
+ if(el.id==="e_menu"){E().foods=[...new Set(el.value.split(",").map(s=>s.trim()).filter(Boolean))];if(!E().foods.includes(E().suspect))E().suspect="";queueSave()}
+ if(el.dataset.tnote){(E().tasks[el.dataset.tnote]=E().tasks[el.dataset.tnote]||{}).n=el.value;queueSave()}
+ if(el.id==="f_q")renderLL()});
+document.addEventListener("change",ev=>{const el=ev.target;
+ if(el.id==="fStat")renderList();if(el.id==="fileEvJson"){impEventJson(el.files[0]);el.value=""}
+ if(!CUR)return;
+ if(el.dataset.e&&el.tagName==="SELECT"){E()[el.dataset.e]=el.value;queueSave();renderHeader()}
+ if(el.dataset.tl){E().tl[el.dataset.tl]=el.value;queueSave();render717();renderHeader()}
+ if(el.dataset.comp){E().comp[el.dataset.comp]=el.checked?localISO(new Date()):false;queueSave();render717();renderHeader()}
+ if(el.dataset.task){const t=E().tasks[el.dataset.task]=E().tasks[el.dataset.task]||{};t.d=el.checked;t.at=el.checked?localISO(new Date()):"";t.by=el.checked?USER.nama:"";queueSave();renderTasks()}
+ if(el.dataset.ira){E().ira[el.dataset.ira]=el.checked;queueSave();renderIRA();renderHeader()}
+ if(el.id==="suspectFood"){E().suspect=el.value;queueSave();renderPangan();renderHeader()}
+ if(el.id==="binSel")renderEpi();if(el.id==="f_fk"||el.id==="f_sk")renderLL();if(el.id==="repType")renderLaporan();
+ if(el.id==="fileXlsx"){readXlsx(el.files[0]);el.value=""}});
+document.addEventListener("click",ev=>{const b=ev.target.closest("button");if(!b)return;
+ if(b.dataset.open)openEvent(b.dataset.open);if(b.dataset.tab)showTab(b.dataset.tab);if(b.dataset.edit)openPerson(b.dataset.edit);if(b.hasAttribute("data-close"))b.closest("dialog").close()});
+$("#btnLogin").onclick=()=>doLogin();$("#kode").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin()});
+$("#btnOut1").onclick=logout;$("#btnRefList").onclick=loadList;
+$("#btnBack").onclick=async()=>{if(dirty){clearTimeout(saveTimer);await saveEvent()}clearInterval(pollT);CUR=null;await loadList();show("vList")};
+$("#btnNewEv").onclick=async()=>{const d=blankEvent();d.nama="Dugaan KLB keracunan pangan (baru)";d.tl.w1=localISO(new Date());try{const r=await api("saveEvent",{data:d});toast("Kejadian baru dibuat. Lengkapi identitasnya.");await openEvent(r.id)}catch(e){toast(e.message)}};
+async function impEventJson(f){if(!f)return;try{const o=JSON.parse(await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>no(new Error("berkas tidak terbaca"));r.readAsText(f)}));if(!o.event||!Array.isArray(o.persons))throw new Error("format tidak dikenal");
+ const d=norm(Object.assign({},o.event,{foods:o.foods||[],suspect:o.suspect||"",tl:o.tl||{},comp:o.comp||{},ira:o.ira||{},tasks:o.tasks||{}}));
+ if(!confirm(`Impor kejadian "${d.nama}" dengan ${o.persons.length} orang?`))return;
+ const r=await api("saveEvent",{data:d});const items=o.persons.map(p=>p.data||p);for(let i=0;i<items.length;i+=50)await api("bulkPersons",{kejadianId:r.id,items:items.slice(i,i+50)});
+ toast("Cadangan diimpor sebagai kejadian baru");await openEvent(r.id)}catch(e){toast("Impor gagal: "+e.message)}}
+
+/* person dialog */
+function openPerson(id){editId=id;const w=id?PL.find(x=>x.id===id):null,p=w?w.data:{sakit:true,gejala:[],foods:{},faskes:USER.peran==="puskesmas"?USER.faskes:""};
+ $("#dlgTitle").textContent=w?"Ubah data":"Tambah orang";$("#dlgDel").style.display=w&&canEv()?"":"none";
+ const set=(s,v)=>$(s).value=v==null?"":v;set("#p_nama",p.nama);set("#p_umur",p.umur);set("#p_jk",p.jk);set("#p_alamat",p.alamat);set("#p_sakit",p.sakit?"1":"0");set("#p_faskes",p.faskes);set("#p_makan",p.makan||E().makan||"");set("#p_onset",p.onset);set("#p_triase",p.triase);set("#p_status",p.status);set("#p_lab",p.lab);set("#p_hamil",p.hamil?"1":"0");set("#p_lain",p.lain);
+ $("#p_sym").innerHTML=SYM.map(([c,l])=>`<label><input type="checkbox" value="${c}" ${(p.gejala||[]).includes(c)?"checked":""}> ${l}</label>`).join("");
+ $("#p_food").innerHTML=E().foods.length?E().foods.map(f=>{const v=p.foods?p.foods[f]:undefined;return`<label>${esc(f)} <select data-food="${esc(f)}"><option value="">?</option><option value="1" ${v===true?"selected":""}>Ya</option><option value="0" ${v===false?"selected":""}>Tidak</option></select></label>`}).join(""):'<p class="note">Menu belum diisi TGC di tab Kejadian.</p>';
+ $("#p_oleh").textContent=w?"Diinput oleh "+(w.oleh||"-"):"";$("#dlgPerson").showModal()}
+$("#btnAdd").onclick=()=>openPerson(null);
+$("#dlgSave").onclick=async()=>{const g=s=>$(s).value;const p={nama:g("#p_nama").trim(),umur:g("#p_umur"),jk:g("#p_jk"),alamat:g("#p_alamat").trim(),sakit:g("#p_sakit")==="1",faskes:g("#p_faskes").trim(),makan:g("#p_makan")===E().makan?"":g("#p_makan"),onset:g("#p_onset"),triase:g("#p_triase"),status:g("#p_status"),lab:g("#p_lab"),hamil:g("#p_hamil")==="1",lain:g("#p_lain"),gejala:$$("#p_sym input:checked").map(x=>x.value),foods:{}};
+ $$("#p_food select").forEach(s=>{if(s.value!=="")p.foods[s.dataset.food]=s.value==="1"});if(!p.nama){toast("Isi nama terlebih dahulu");return}
+ const mk=dt(p.makan||E().makan);if(p.sakit&&p.onset&&mk&&dt(p.onset)<mk&&!confirm("Waktu onset lebih awal dari waktu makan. Tetap simpan?"))return;
+ const w=editId?PL.find(x=>x.id===editId):null;$("#dlgSave").disabled=true;
+ try{const r=await api("savePerson",{id:w?w.id:null,versi:w?w.versi:null,kejadianId:CUR.id,data:p});if(w){w.data=p;w.versi=r.versi}else PL.push({id:r.id,versi:1,data:p,oleh:USER.faskes+" / "+USER.nama});$("#dlgPerson").close();renderAll();toast("Data disimpan")}
+ catch(e){toast(e.message);if(/KONFLIK/.test(e.message)){$("#dlgPerson").close();await poll()}}finally{$("#dlgSave").disabled=false}};
+$("#dlgDel").onclick=async()=>{const w=PL.find(x=>x.id===editId);if(!w||!confirm("Hapus data "+w.data.nama+"?"))return;try{await api("deletePerson",{id:w.id});PL=PL.filter(x=>x!==w);$("#dlgPerson").close();renderAll()}catch(e){toast(e.message)}};
+
+/* Excel import */
+const MAPF=[["nama","Nama",/nama/i],["umur","Umur",/umur|usia|age/i],["jkL","Jenis kelamin (atau kolom L)",/^jk$|kelamin|sex|l\/p|^l$/i],["jkP","Kolom P (bila L/P terpisah)",/^p$/i],["alamat","Alamat",/alamat|rt|dusun/i],["faskes","Faskes",/faskes|tempat.*berobat/i],["sakit","Sakit (Ya/Tidak)",/^sakit$|^ya$|kasus/i],["gejala","Gejala (teks)",/gejala|keluhan|diagnos/i],["jenis","Jenis makanan (teks)",/jenis makan/i],["onsetTgl","Tanggal/waktu onset",/onset|mulai sakit|tgl sakit|tanggal sakit|^sakit tgl$/i],["onsetJam","Jam onset",/^sakit jam$|jam.*(onset|sakit)/i],["makanTgl","Tanggal/waktu makan",/^makan$|^makan tgl$|tgl.*makan|tanggal.*makan|waktu makan/i],["makanJam","Jam makan",/^makan jam$|jam.*makan/i],["triase","Triase",/triase|derajat/i],["status","Status / keadaan penderita",/status|keadaan/i],["ket","Keterangan (rawat inap/jalan, rujuk)",/keterangan|^ket\b/i],["masuk","Tanggal masuk faskes (cadangan onset)",/masuk|kunjung|datang/i]];
+SYM.forEach(([c,l])=>MAPF.push(["sym_"+c,"Kolom gejala: "+l,new RegExp("^("+({M:"mual",Mn:"muntah",D:"diare|mencret|bab",SP:"sakit perut|nyeri perut|mules|kram",P:"pusing|sakit kepala",Dm:"demam|panas",GN:"kejang|kesemutan|lumpuh",L:"lain"}[c])+")$","i")]));
+function readXlsx(file){if(!file)return;if(typeof XLSX==="undefined"){toast("Pustaka Excel gagal dimuat");return}const r=new FileReader();r.onload=e=>{try{const wb=XLSX.read(new Uint8Array(e.target.result),{type:"array"}),ws=wb.Sheets[wb.SheetNames[0]],rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:""});
+ let hi=rows.findIndex(r=>r.filter(c=>String(c).trim()!=="").length>=5);if(hi<0)hi=0;
+ // gabungkan header dua baris (mis. L/P, TGL/JAM di baris kedua)
+ let head=rows[hi].map(h=>String(h).trim()),sub=rows[hi+1]||[],start=hi+1;const subCount=sub.filter(c=>String(c).trim()!==""&&isNaN(+c)).length;
+ if(subCount>=3&&!/^\d+$/.test(String(sub[0]).trim())){let last="";head=head.map((h,i)=>{if(h)last=h;const s=String(sub[i]||"").trim();return s?(h&&!/tgl|jam|^l$|^p$|^ya$|^tidak$|^\d$/i.test(s)?s:(s.match(/^(tgl|jam)$/i)?(last+" "+s):s)):(h||last)});start=hi+2}
+ head=head.map((h,i)=>h||("Kolom "+(i+1)));
+ xl={head,data:rows.slice(start).filter(r=>r.some(c=>String(c).trim()!=="")),name:file.name};openMap()}catch(err){toast("Berkas tidak terbaca: "+err.message)}};r.readAsArrayBuffer(file)}
+function openMap(){const{head,data}=xl,used=new Set();$("#mapInfo").textContent=`${xl.name} · ${data.length} baris. Periksa pasangan kolom; pilih "–" bila tidak ada.`;$("#m_faskes").value=USER.peran==="puskesmas"?USER.faskes:"";
+ $("#mapGrid").innerHTML=MAPF.map(([k,l,re])=>{let g=head.findIndex((h,i)=>!used.has(i)&&re.test(h));if(g>=0&&!k.startsWith("sym_"))used.add(g);return`<div><label>${l}</label><select data-map="${k}"><option value="-1">–</option>${head.map((h,i)=>`<option value="${i}" ${i===g?"selected":""}>${esc(h)}</option>`).join("")}</select></div>`}).join("");
+ $("#mapPrev").innerHTML=`<table><tr>${head.map(h=>`<th>${esc(h)}</th>`).join("")}</tr>${data.slice(0,3).map(r=>`<tr>${head.map((h,i)=>`<td>${esc(r[i])}</td>`).join("")}</tr>`).join("")}</table>`;$("#dlgMap").showModal()}
+function xlDate(v,jam){if(v===""||v==null)return"";let d=null;if(typeof v==="number"){const x=new Date(Math.round((v-25569)*864e5));d=new Date(x.getUTCFullYear(),x.getUTCMonth(),x.getUTCDate(),x.getUTCHours(),x.getUTCMinutes())}else{const s=String(v).trim();let m=s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})(?:[ T,]+(\d{1,2})[:.](\d{2}))?/);if(m){let y=+m[3];if(y<100)y+=2000;d=new Date(y,+m[2]-1,+m[1],+(m[4]||0),+(m[5]||0))}else{m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2}))?/);if(m)d=new Date(+m[1],+m[2]-1,+m[3],+(m[4]||0),+(m[5]||0))}}
+ if(!d||isNaN(d))return"";if(jam!==""&&jam!=null){if(typeof jam==="number"&&jam<1){const mi=Math.round(jam*1440);d.setHours(Math.floor(mi/60),mi%60)}else{const m=String(jam).match(/(\d{1,2})[:.](\d{2})/);if(m)d.setHours(+m[1],+m[2])}}return localISO(d)}
+const truthy=v=>/^(ya|y|v|√|✓|x|\+|1|ada|yes|true)$/i.test(String(v).trim());
+$("#mapGo").onclick=async()=>{const M={};$$("[data-map]").forEach(s=>M[s.dataset.map]=+s.value);const col=(r,k)=>M[k]>=0?r[M[k]]:"";const defSick=$("#m_sakit").value==="1",defFk=$("#m_faskes").value.trim();
+ const kw={M:/mual/,Mn:/muntah/,D:/diare|mencret|bab cair|buang air/,SP:/sakit perut|nyeri perut|mules|mulas|kram/,P:/pusing|sakit kepala/,Dm:/demam|panas/,GN:/kejang|kesemutan|lumpuh|kabur/};
+ const items=xl.data.map(r=>{const gt=String(col(r,"gejala")).toLowerCase(),gej=[];SYM.forEach(([c])=>{if((M["sym_"+c]>=0&&truthy(col(r,"sym_"+c)))||(kw[c]&&kw[c].test(gt)))gej.push(c)});
+  const sk=String(col(r,"sakit"));const sakit=M.sakit>=0?(truthy(sk)||(/sakit|kasus/i.test(sk)&&!/tidak|tdk/i.test(sk))):defSick;
+  const has=v=>String(v==null?"":v).trim()!=="";let jk=String(col(r,"jkL")).trim().toUpperCase();if(M.jkP>=0){jk=has(col(r,"jkP"))?"P":has(col(r,"jkL"))?"L":""}else jk=jk.startsWith("L")?"L":(jk.startsWith("P")||jk.startsWith("W"))?"P":"";
+  const us=String(col(r,"umur"));let umur=us.match(/[\d.,]+/)?parseFloat(us.replace(",",".")):"";if(/bl|bulan/i.test(us)&&umur!=="")umur=Math.round(umur/12*10)/10;
+  const st=(String(col(r,"status"))+" "+String(col(r,"ket"))).toLowerCase(),status=/meninggal|wafat/.test(st)?"Mg":/rujuk/.test(st)?"Rj":/sembuh|pulang/.test(st)?"Sm":/rawat inap|opname|dirawat/.test(st)?"Dr":/rawat jalan|lemas|lemah|baik|stabil/.test(st)?"MS":"";
+  const tr=String(col(r,"triase")).toLowerCase(),triase=/berat/.test(tr)?"Berat":/sedang/.test(tr)?"Sedang":/ringan/.test(tr)?"Ringan":"";
+  const foods={};const jn=String(col(r,"jenis")).toLowerCase();E().foods.forEach(f=>{if(jn&&jn.includes(f.toLowerCase()))foods[f]=true});
+  let onset=xlDate(col(r,"onsetTgl"),col(r,"onsetJam"));if(!onset&&sakit)onset=xlDate(col(r,"masuk"),"");
+  return{nama:String(col(r,"nama")).trim(),umur,jk,alamat:String(col(r,"alamat")).trim(),faskes:(String(col(r,"faskes")).trim()||defFk).replace(/^pkm\.?\s+/i,"Puskesmas "),sakit,gejala:gej,lain:[String(col(r,"status")).trim(),String(col(r,"ket")).trim(),jn?"makan: "+jn:""].filter(Boolean).join("; "),makan:xlDate(col(r,"makanTgl"),col(r,"makanJam")),onset,triase,status,lab:"",hamil:false,foods}}).filter(p=>p.nama);
+ if(!items.length){toast("Tidak ada baris bernama yang terbaca");return}
+ try{for(let i=0;i<items.length;i+=50)await api("bulkPersons",{kejadianId:CUR.id,items:items.slice(i,i+50)});$("#dlgMap").close();const r=await api("getEvent",{id:CUR.id});PL=r.persons;renderAll();toast(items.length+" baris diimpor. Periksa nama ganda dan lengkapi riwayat makan.")}catch(e){toast("Impor gagal: "+e.message)}};
+
+/* export */
+function download(name,data,type){const b=data instanceof Blob?data:new Blob([data],{type:type||"text/plain;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+const slug=()=>(E().desa||"kejadian").replace(/[^\w]+/g,"_")+"_"+new Date().toISOString().slice(0,10);
+$("#btnCopy").onclick=async()=>{try{await navigator.clipboard.writeText(report());toast("Teks laporan disalin")}catch(e){const r=document.createRange();r.selectNodeContents($("#repText"));const s=getSelection();s.removeAllRanges();s.addRange(r);toast("Teks sudah diseleksi; tekan Ctrl+C")}};
+$("#btnDlTxt").onclick=()=>download(`Laporan_${$("#repType").value}_${slug()}.txt`,report());
+$("#btnJson").onclick=()=>download(`Cadangan_KLB_${slug()}.json`,JSON.stringify({event:CUR.data,foods:CUR.data.foods,suspect:CUR.data.suspect,tl:CUR.data.tl,comp:CUR.data.comp,ira:CUR.data.ira,tasks:CUR.data.tasks,persons:PD()},null,1),"application/json");
+$("#btnXlsx").onclick=()=>{if(typeof XLSX==="undefined"){toast("Pustaka Excel gagal dimuat");return}const e=E(),wb=XLSX.utils.book_new();
+ XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(PL.map((w,i)=>{const p=w.data,a=dt(mealOf(p)),b=dt(p.onset),o={No:i+1,Nama:p.nama,Umur:p.umur,JK:p.jk,Alamat:p.alamat,Faskes:p.faskes,Sakit:p.sakit?"Ya":"Tidak",Gejala:(p.gejala||[]).map(c=>(SYM.find(s=>s[0]===c)||[0,c])[1]).join(", "),"Waktu makan":mealOf(p).replace("T"," "),Onset:(p.onset||"").replace("T"," "),"Inkubasi (jam)":a&&b&&p.sakit?Math.round(hrs(a,b)*10)/10:"",Triase:p.triase,Status:STAT[p.status]||"",Kategori:category(p),Lab:p.lab,Catatan:p.lain,"Diinput oleh":w.oleh};e.foods.forEach(f=>{const v=p.foods?p.foods[f]:undefined;o[f]=v===true?"Ya":v===false?"Tidak":""});return o})),"Line-list");
+ XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(foodStats().map(s=>({Pangan:s.f,"Makan-sakit":s.a,"Makan-total":s.a+s.b,"AR makan %":s.arE==null?"":+s.arE.toFixed(1),"Tdk makan-sakit":s.c,"Tdk makan-total":s.c+s.d,"AR tdk makan %":s.arU==null?"":+s.arU.toFixed(1),RR:s.rr?+s.rr.toFixed(2):"","IK95 bawah":s.lo?+s.lo.toFixed(2):"","IK95 atas":s.hi?+s.hi.toFixed(2):"",p:s.p==null?"":+s.p.toFixed(4)}))),"AR per pangan");
+ const cs=cases(),inc=incubs();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([["Kejadian",e.nama],["ID",CUR.id],["Lokasi","Desa "+e.desa+", Kec. "+e.kec],["Waktu makan",(e.makan||"").replace("T"," ")],["Penderita",cs.length],["Meninggal",cs.filter(p=>p.status==="Mg").length],["Median inkubasi (jam)",inc.length?+median(inc).toFixed(1):""],["IRA",iraLevel().lv],["Status KLB",klbStatus().label],["Pangan tersangka",e.suspect]]),"Rekap");
+ download(`Analisis_KLB_${slug()}.xlsx`,new Blob([XLSX.write(wb,{bookType:"xlsx",type:"array"})]))};
+
+/* init */
+$("#faskesList").innerHTML=FASKES.map(f=>`<option>${esc(f)}</option>`).join("");
+$("#localHint").classList.toggle("hidden",!!API_URL);
+window.addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue=""}});
+setInterval(()=>{if(CUR)renderHeader()},60000);
+let k0="";try{k0=sessionStorage.getItem("tgc-kode")||""}catch(e){}if(k0)doLogin(k0);
+})();
+</script>
+</body>
+</html>
