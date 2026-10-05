@@ -121,7 +121,7 @@ pre.report{white-space:pre-wrap;font-family:inherit;background:var(--paper);bord
   <header class="top"><div class="wrap">
     <div class="topbar"><span id="who1"></span><span><button id="btnOut1">Keluar</button></span></div>
     <h1>Daftar kejadian KLB keracunan pangan</h1>
-    <div class="sub" style="padding-bottom:18px">Tim Gerak Cepat Dinas Kesehatan Kabupaten Kapuas</div>
+    <div class="sub" style="padding-bottom:18px">Tim Gerak Cepat Dinas Kesehatan Kabupaten Kapuas · <span id="ver1"></span></div>
   </div></header>
   <main class="wrap">
     <div class="btns noprint" style="margin-bottom:12px">
@@ -140,7 +140,7 @@ pre.report{white-space:pre-wrap;font-family:inherit;background:var(--paper);bord
 <!-- KEJADIAN -->
 <div id="vEvent" class="hidden">
 <header class="top"><div class="wrap">
-  <div class="topbar"><span><button id="btnBack">← Daftar kejadian</button> &nbsp;<span id="who2"></span></span><span class="sync" id="sync"></span></div>
+  <div class="topbar"><span><button id="btnBack">← Daftar kejadian</button> &nbsp;<span id="who2"></span></span><span><span class="sync" id="sync"></span> · <span class="sync" id="ver2"></span></span></div>
   <h1 id="hTitle"></h1>
   <div class="sub" id="hSub"></div>
   <div class="statusrow" id="hChips"></div>
@@ -324,6 +324,7 @@ pre.report{white-space:pre-wrap;font-family:inherit;background:var(--paper);bord
 const API_URL = ""; // KOSONG = MODE INTERNAL (tanpa login, data di peramban ini). Isi URL Web App Apps Script (…/exec) untuk mode server bersama.
 const FASKES = ["Dinas Kesehatan Kabupaten Kapuas","RSUD dr. H. Soemarno Sosroatmodjo Kuala Kapuas","Puskesmas Dadahup","Puskesmas Palangkau","Tidak berobat"];
 const POLL_MS = 60000;
+const APP_VERSION = "5 Okt 2026 (v3)";
 /* =============================================== */
 (function(){
 "use strict";
@@ -480,7 +481,9 @@ function qcIssues(){const out=[];PL.forEach(w=>{const p=w.data;if(!p.sakit)retur
  if(!p.onset)out.push([w,"waktu sakit (onset) belum diisi"]);
  else if(a&&b<a)out.push([w,`waktu sakit ${fdt(b)} lebih awal dari waktu makan ${fdt(a)}. Kemungkinan jam ditulis format 12 jam (mis. 04.30 untuk 16.30) atau salah ketik`]);
  else if(a&&hrs(a,b)>72)out.push([w,`masa inkubasi ${f1(hrs(a,b))} jam (> 72 jam); periksa tanggal sakit/makan`]);
- if(!a)out.push([w,"waktu makan belum diisi"]);});return out}
+ if(!a)out.push([w,"waktu makan belum diisi"]);
+ const ev=dt(E().makan);if(a&&ev&&p.makan&&Math.abs(hrs(ev,a))>3)out.push([w,`waktu makan ${fdt(a)} berbeda lebih dari 3 jam dari waktu makan acara ${fdt(ev)}; periksa apakah jam/tanggal makan tertulis benar`]);
+ if(b&&ev&&Math.abs(hrs(ev,b))>72)out.push([w,`waktu sakit ${fdt(b)} berjarak lebih dari 3 hari dari waktu makan acara; periksa tanggalnya`]);});return out}
 function lf(n){let s=0;for(let i=2;i<=n;i++)s+=Math.log(i);return s}
 function fisher(a,b,c,d){const r1=a+b,r2=c+d,c1=a+c,n=r1+r2;const lp=x=>lf(r1)+lf(r2)+lf(c1)+lf(n-c1)-lf(n)-lf(x)-lf(r1-x)-lf(c1-x)-lf(r2-c1+x);const p0=lp(a);let s=0;for(let x=Math.max(0,c1-r2);x<=Math.min(r1,c1);x++){const v=lp(x);if(v<=p0+1e-7)s+=Math.exp(v)}return Math.min(1,s)}
 function foodStats(){const n=cases().length;return E().foods.map(f=>{let a=0,b=0,c=0,d=0,unk=0;PD().forEach(p=>{const v=p.foods?p.foods[f]:undefined;if(v===true){p.sakit?a++:b++}else if(v===false){p.sakit?c++:d++}else unk++});
@@ -675,6 +678,7 @@ $("#btnXlsx").onclick=()=>{if(typeof XLSX==="undefined"){toast("Pustaka Excel ga
  download(`Analisis_KLB_${slug()}.xlsx`,new Blob([XLSX.write(wb,{bookType:"xlsx",type:"array"})]))};
 
 /* init */
+["#ver1","#ver2"].forEach(x=>{const e=$(x);if(e)e.textContent="Versi aplikasi "+APP_VERSION});
 $("#faskesList").innerHTML=FASKES.map(f=>`<option>${esc(f)}</option>`).join("");
 $("#localHint").classList.toggle("hidden",!!API_URL);
 window.addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue=""}});
