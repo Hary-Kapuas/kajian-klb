@@ -177,6 +177,7 @@ pre.report{white-space:pre-wrap;font-family:inherit;background:var(--paper);bord
   <div class="btns noprint" style="margin-bottom:12px">
     <button class="btn" id="btnAdd">Tambah orang</button>
     <button class="btn ghost" id="btnAddr">Seragamkan alamat</button>
+    <label class="btn ghost" style="margin:0" id="lblFoodUpd">Perbarui riwayat makan dari Excel<input type="file" id="fileFoodUpd" accept=".xlsx,.xls,.csv" hidden></label>
     <label class="btn sec" style="margin:0">Impor Excel / CSV<input type="file" id="fileXlsx" accept=".xlsx,.xls,.csv" hidden></label>
     <span class="note" id="llCount"></span>
   </div>
@@ -324,7 +325,7 @@ pre.report{white-space:pre-wrap;font-family:inherit;background:var(--paper);bord
 const API_URL = ""; // KOSONG = MODE INTERNAL (tanpa login, data di peramban ini). Isi URL Web App Apps Script (…/exec) untuk mode server bersama.
 const FASKES = ["Dinas Kesehatan Kabupaten Kapuas","RSUD dr. H. Soemarno Sosroatmodjo Kuala Kapuas","Puskesmas Dadahup","Puskesmas Palangkau","Tidak berobat"];
 const POLL_MS = 60000;
-const APP_VERSION = "5 Okt 2026 (v3)";
+const APP_VERSION = "5 Okt 2026 (v4)";
 /* =============================================== */
 (function(){
 "use strict";
@@ -514,7 +515,7 @@ function renderHeader(){const e=E(),cs=cases(),d=cs.filter(p=>p.status==="Mg").l
  const seg=(num,what,row,ex)=>{let cls="",st="Belum diisi";if(row){if(row.status==="ok"){cls="ok";st="Tercapai ("+f1(row.dur)+" jam)"}else if(row.status==="late"){cls="late";st="Terlambat ("+f1(row.dur)+" jam)"}else if(row.status==="run"){cls="run";st="Berjalan, sisa "+f1(row.left)+" jam"}else if(row.status==="over"){cls="late";st="Lewat batas "+f1(-row.left)+" jam"}}if(ex){st=ex.st;cls=ex.cls}return `<div class="seg ${cls}"><div class="num">${num}</div><div class="what">${what}</div><div class="state">${st}</div></div>`};
  const done=COMP.filter(c=>e.comp[c[0]]).length,w1=tlGet("w1");let ex;if(w1){const left=168-hrs(w1,new Date());ex=done===7?{cls:"ok",st:"7/7 komponen selesai"}:left<0?{cls:"late",st:done+"/7 komponen, lewat batas"}:{cls:"run",st:done+"/7 komponen, sisa "+f1(left/24)+" hari"}}else ex={cls:"",st:done+"/7 komponen, menunggu jam W1"};
  $("#s717").innerHTML=seg(7,"hari: deteksi sejak kasus pertama",g("deteksi"))+seg(1,"hari: notifikasi W1 setelah deteksi",g("w1"))+seg(7,"hari: respons awal sejak notifikasi",null,ex)}
-function lockFields(){const ro=!canEv();$("#btnAddr")&&$("#btnAddr").classList.toggle("hidden",ro);$$("#p-kejadian input,#p-kejadian textarea,#p-kejadian select,#p-ira input,#p-717 input,#p-tugas input,#p-tugas textarea,#tindakan,#suspectFood").forEach(el=>el.disabled=ro);
+function lockFields(){const ro=!canEv();["#btnAddr","#lblFoodUpd"].forEach(x=>$(x)&&$(x).classList.toggle("hidden",ro));$$("#p-kejadian input,#p-kejadian textarea,#p-kejadian select,#p-ira input,#p-717 input,#p-tugas input,#p-tugas textarea,#tindakan,#suspectFood").forEach(el=>el.disabled=ro);
  $("#roleNote").textContent=ro?"Peran Puskesmas: bagian ini hanya bisa dilihat. Puskesmas mengisi data di tab Line-list.":"Perubahan tersimpan otomatis ke server dan terlihat oleh seluruh anggota TGC."}
 function renderKejadian(){const e=E();$$("[data-e]").forEach(el=>{if(document.activeElement!==el)el.value=e[el.dataset.e]||(el.dataset.e==="status"?"aktif":"")});if(document.activeElement!==$("#e_menu"))$("#e_menu").value=e.foods.join(", ");
  const tgl=e.makan?dt(e.makan).toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"}):"[tanggal acara]";
@@ -619,6 +620,19 @@ function openPerson(id){editId=id;const w=id?PL.find(x=>x.id===id):null,p=w?w.da
  $("#p_food").innerHTML=E().foods.length?E().foods.map(f=>{const v=p.foods?p.foods[f]:undefined;return`<label>${esc(f)} <select data-food="${esc(f)}"><option value="">?</option><option value="1" ${v===true?"selected":""}>Ya</option><option value="0" ${v===false?"selected":""}>Tidak</option></select></label>`}).join(""):'<p class="note">Menu belum diisi TGC di tab Kejadian.</p>';
  $("#p_oleh").textContent=w?"Diinput oleh "+(w.oleh||"-"):"";$("#dlgPerson").showModal()}
 $("#btnAdd").onclick=()=>openPerson(null);
+function normName(x){return String(x||"").toLowerCase().replace(/^contoh:\s*/,"").replace(/[^a-z0-9]+/g," ").trim()}
+$("#fileFoodUpd").addEventListener("change",ev=>{const f=ev.target.files[0];ev.target.value="";if(!f||!CUR)return;if(!canEv()){toast("Hanya TGC/admin");return}
+ if(!E().foods.length){toast("Isi daftar menu di tab Kejadian dulu");return}if(typeof XLSX==="undefined"){toast("Pustaka Excel gagal dimuat");return}
+ const r=new FileReader();r.onload=async()=>{try{const wb=XLSX.read(new Uint8Array(r.result),{type:"array"}),rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:false,defval:""});
+  let hi=-1,cN=-1,cJ=-1;for(let i=0;i<Math.min(rows.length,8);i++){const h=rows[i].map(x=>String(x).trim());const a=h.findIndex(x=>/^nama$/i.test(x)||/^nama\b/i.test(x)),b=h.findIndex(x=>/jenis\s*makan/i.test(x));if(a>=0&&b>=0){hi=i;cN=a;cJ=b;break}}
+  if(hi<0)throw new Error("kolom 'Nama' dan 'Jenis makanan' tidak ditemukan");
+  const idx={};PL.forEach(w=>{const k=normName(w.data.nama);(idx[k]=idx[k]||[]).push(w)});
+  const upd=[],miss=[],amb=[];rows.slice(hi+1).forEach(row=>{const nm=String(row[cN]||"").trim(),jn=String(row[cJ]||"").toLowerCase().trim();if(!nm||!jn||/^(-|\?|tidak tahu|tdk tahu|lupa)$/.test(jn))return;
+   const m=idx[normName(nm)];if(!m){miss.push(nm);return}if(m.length>1){amb.push(nm);return}upd.push([m[0],jn])});
+  if(!upd.length){toast("Tidak ada nama yang cocok"+(miss.length?": "+miss.slice(0,5).join(", "):""));return}
+  if(!confirm(`Perbarui riwayat makan ${upd.length} orang untuk menu: ${E().foods.join(", ")}?`+(miss.length?`\n\n${miss.length} nama tidak ditemukan di line-list: ${miss.slice(0,10).join(", ")}${miss.length>10?", …":""}`:"")+(amb.length?`\n${amb.length} nama ganda dilewati: ${amb.join(", ")}`:"")))return;
+  let ok=0;for(const [w,jn] of upd){const foods=Object.assign({},w.data.foods||{});E().foods.forEach(fd=>{foods[fd]=jn.includes(fd.toLowerCase())});const d=Object.assign({},w.data,{foods});const res=await api("savePerson",{id:w.id,versi:w.versi,kejadianId:CUR.id,data:d});w.data=d;w.versi=res.versi;ok++}
+  renderAll();toast(ok+" riwayat makan diperbarui"+(miss.length?`; ${miss.length} nama tidak cocok`:""))}catch(e){toast("Gagal: "+e.message)}};r.readAsArrayBuffer(f)});
 $("#btnAddr").onclick=()=>{if(!canEv()){toast("Hanya TGC/admin yang dapat menyeragamkan alamat");return}const m={};PL.forEach(w=>{const a=(w.data.alamat||"").trim();m[a]=(m[a]||0)+1});const rows=Object.entries(m).sort((a,b)=>a[0].localeCompare(b[0]));
  $("#addrList").innerHTML=rows.length?`<table><tr><th>Alamat sekarang</th><th class="n">Orang</th><th>Ganti menjadi</th></tr>${rows.map(([a,n],i)=>`<tr><td>${a?esc(a):'<span class="note">(kosong)</span>'}</td><td class="n">${n}</td><td><input data-addr="${i}" value="${esc(a)}" list="addrSug"></td></tr>`).join("")}</table><datalist id="addrSug">${rows.filter(r=>r[0]).map(r=>`<option>${esc(r[0])}</option>`).join("")}</datalist>`:'<p class="note">Belum ada data.</p>';
  $("#addrList")._rows=rows;$("#dlgAddr").showModal()};
